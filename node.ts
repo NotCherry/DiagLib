@@ -40,7 +40,8 @@ class GraphNode {
     ctx.fillText(this.title, this.pos[0] + 10, this.pos[1] + 20);
 
     if (this.size[0] > 100 && this.size[1] > 50) {
-      // console.log(this.size[0], this.size[1]);
+      ctx.fillStyle = "#F00";
+      ctx.fi;
     }
   }
 }

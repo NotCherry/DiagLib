@@ -1,74 +1,70 @@
 import Graph from "./graph";
 import GraphNode from "./node";
+import { Point } from "./types";
 
 export default function drag_setup(graf: Graph) {
+  function getTransformedPoint(x, y) {
+    const originalPoint = new DOMPoint(x, y);
+    return graf.ctx.getTransform().invertSelf().transformPoint(originalPoint);
+  }
   var selected_node: GraphNode | undefined = undefined;
-  var starting_pos_offset: number[] = [0, 0];
+  var starting_pos_offset: Point = { x: 0, y: 0 };
+  let zoom: number = 1.0;
+
+  let drag_start_pos: Point = { x: 0, y: 0 };
+  let wheelPress: boolean = false;
+
+  let scale;
 
   addEventListener("wheel", (event) => {
-    event.preventDefault();
-    graf.zoom = true;
+    zoom = event.deltaY < 0 ? 1.1 : 0.9;
 
-    let w = graf.MOUSE_POS[0] / graf.scale;
-    let h = graf.MOUSE_POS[1] / graf.scale;
-
-    const scaleFactor = 0.1;
-    const zoomIntensity = event.deltaY > 0 ? -1 : 1;
-    graf.scale = graf.scale + zoomIntensity * scaleFactor;
-    graf.scale = Math.max(0.3, graf.scale);
-
-    console.log(graf.MOUSE_POS[0] - graf.MOUSE_POS[0] / graf.scale);
-
+    graf.ctx.translate(graf.ctc.x, graf.ctc.y);
+    graf.ctx.scale(zoom, zoom);
+    graf.ctx.translate(-graf.ctc.x, -graf.ctc.y);
     graf.render();
-    graf.zoom = false;
+    event.preventDefault();
   });
 
   // Draging graph with cursor wheel
   addEventListener("mousedown", (event) => {
     if (event.button === 1) {
-      graf.START_MOUSE_POS = [
-        event.pageX / graf.scale,
-        event.pageY / graf.scale,
-      ];
-      graf.WHEEL_PRESS = true;
+      drag_start_pos = getTransformedPoint(event.offsetX, event.offsetY);
+      wheelPress = true;
     }
   });
   addEventListener("mousemove", (event) => {
-    if (graf.WHEEL_PRESS === true) {
-      graf.PAGEX = event.pageX / graf.scale - graf.START_MOUSE_POS[0];
-      graf.PAGEY = event.pageY / graf.scale - graf.START_MOUSE_POS[1];
+    graf.ctc = getTransformedPoint(event.offsetX, event.offsetY);
+
+    if (wheelPress === true) {
+      graf.ctx.translate(
+        graf.ctc.x - drag_start_pos.x,
+        graf.ctc.y - drag_start_pos.y
+      );
       graf.render();
     }
-
-    graf.MOUSE_POS = [event.pageX / graf.scale, event.pageY / graf.scale];
   });
   addEventListener("mouseup", (event) => {
-    if (event.button === 1 && graf.WHEEL_PRESS === true) {
-      graf.WHEEL_PRESS = false;
-      graf.saveDisplay();
-      graf.PAGEX = 0;
-      graf.PAGEY = 0;
+    if (event.button === 1 && wheelPress === true) {
+      wheelPress = false;
       graf.render();
     }
   });
 
   addEventListener("mousedown", (event) => {
-    if (graf.WHEEL_PRESS != true) {
-      console.log("Wheel");
+    if (wheelPress != true) {
       graf.nodes.forEach((node) => {
         if (
-          event.clientX / graf.scale > node.pos[0] + graf.X_OFFSET &&
-          event.clientX / graf.scale <
-            node.pos[0] + node.size[0] + graf.X_OFFSET &&
-          event.clientY / graf.scale > node.pos[1] + graf.Y_OFFSET &&
-          event.clientY / graf.scale <
-            node.pos[1] + node.size[1] + graf.Y_OFFSET
+          graf.ctc.x > node.pos[0] &&
+          graf.ctc.x < node.pos[0] + node.size[0] &&
+          graf.ctc.y > node.pos[1] &&
+          graf.ctc.y < node.pos[1] + node.size[1]
         ) {
           selected_node = node;
-          starting_pos_offset = [
-            event.clientX / graf.scale - node.pos[0] - graf.X_OFFSET,
-            event.clientY / graf.scale - node.pos[1] - graf.Y_OFFSET,
-          ];
+          starting_pos_offset = {
+            x: graf.ctc.x - drag_start_pos.x - node.pos[0],
+            y: graf.ctc.y - drag_start_pos.y - node.pos[1],
+          };
         }
       });
     }
@@ -81,8 +77,8 @@ export default function drag_setup(graf: Graph) {
   addEventListener("mousemove", (event) => {
     if (selected_node != undefined) {
       selected_node.pos = [
-        event.clientX / graf.scale - starting_pos_offset[0] - graf.X_OFFSET,
-        event.clientY / graf.scale - starting_pos_offset[1] - graf.Y_OFFSET,
+        graf.ctc.x - drag_start_pos.x - starting_pos_offset.x,
+        graf.ctc.y - drag_start_pos.y - starting_pos_offset.y,
       ];
 
       graf.render();
