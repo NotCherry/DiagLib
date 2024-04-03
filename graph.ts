@@ -5,6 +5,7 @@ class Graph {
   nodes: GraphNode[];
   canvas: HTMLCanvasElement;
   ctx: CanvasRenderingContext2D;
+  // where the mouse is with applied transformations
   ctc: Point = { x: 0, y: 0 };
 
   constructor(canvas: HTMLCanvasElement) {

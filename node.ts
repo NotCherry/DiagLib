@@ -1,3 +1,6 @@
+import { Point } from "./types";
+import { drawCircle } from "./utility";
+
 interface IGraphNodeOptions {
   color?: string;
 }
@@ -5,8 +8,29 @@ interface IGraphNodeOptions {
 interface IGraphNode {
   title: string;
   size?: number[];
-  pos?: number[];
+  pos: number[];
+  pointingTo?: GraphNode;
   options?: IGraphNodeOptions;
+}
+
+export interface GraphNodeIO {
+  name: string;
+  radius: number;
+  pos: Point;
+  type: "input" | "output";
+}
+
+export class GraphNodeIO {
+  name: string;
+  radius: number;
+  type: "input" | "output";
+
+  constructor(args: GraphNodeIO) {
+    this.radius = args.radius || 5;
+    this.name = args.name;
+    this.type = args.type;
+    this.pos = { x: args.pos.x, y: args.pos.y };
+  }
 }
 
 class GraphNode {
@@ -14,6 +38,10 @@ class GraphNode {
   size: number[];
   pos: number[];
   color: string;
+  io: GraphNodeIO[];
+  Input: GraphNodeIO[];
+  Output: GraphNodeIO[];
+
   constructor(args: IGraphNode) {
     this.title = args.title || "Node";
     this.size = args.size || [300, 200];
@@ -21,6 +49,9 @@ class GraphNode {
     if (args.options) {
       this.color = args.options.color || "black";
     }
+    this.io = [];
+    // this.Input = [];
+    // this.Output = [];
   }
   render(ctx: CanvasRenderingContext2D) {
     ctx.fillStyle = this.color || "#222";
@@ -40,9 +71,74 @@ class GraphNode {
     ctx.fillText(this.title, this.pos[0] + 10, this.pos[1] + 20);
 
     if (this.size[0] > 100 && this.size[1] > 50) {
-      ctx.fillStyle = "#F00";
-      ctx.fi;
+      this.drawIO(ctx);
     }
+  }
+
+  addIO(args: { name: string; radius: number; type: "input" | "output" }) {
+    args.radius = args.radius || 10;
+    // if (args.type === "input") {
+    //   this.Input.push(
+    //     new GraphNodeIO({
+    //       ...args,
+    //       pos: { x: 0, y: 0 },
+    //     })
+    //   );
+    // } else if (args.type === "output") {
+    //   this.Output.push(
+    //     new GraphNodeIO({
+    //       ...args,
+    //       pos: { x: 0, y: 0 },
+    //     })
+    //   );
+    // }
+    this.io.push(
+      new GraphNodeIO({
+        ...args,
+        pos: { x: 0, y: 0 },
+        type: args.type,
+      })
+    );
+  }
+
+  updateIOPos() {
+    let inputs = 0;
+    let outputs = 0;
+
+    this.io.forEach((io, i) => {
+      if (io.type === "input") {
+        io.pos = { x: this.pos[0] + 15, y: this.pos[1] + 45 + inputs * 30 };
+        inputs++;
+      } else {
+        io.pos = {
+          x: this.pos[0] + this.size[0] - 15,
+          y: this.pos[1] + 45 + outputs * 30,
+        };
+        outputs++;
+      }
+      // io.pos = { x: this.pos[0] + 15, y: this.pos[1] + 45 + i * 30 };
+    });
+    // this.Output.forEach((io, i) => {
+    //   io.pos = {
+    //     x: this.pos[0] + this.size[0] - 15,
+    //     y: this.pos[1] + 45 + i * 30,
+    //   };
+    // });
+  }
+
+  drawIO(ctx: CanvasRenderingContext2D) {
+    this.updateIOPos();
+    ctx.strokeStyle = "#fff";
+    ctx.fillStyle = "#fff";
+    // this.Input.forEach((io) => {
+    //   drawCircle(ctx, io.pos, io.radius);
+    // });
+    // this.Output.forEach((io) => {
+    //   drawCircle(ctx, io.pos, io.radius);
+    // });
+    this.io.forEach((io) => {
+      drawCircle(ctx, io.pos, io.radius);
+    });
   }
 }
 

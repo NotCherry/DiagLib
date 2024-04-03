@@ -5,6 +5,7 @@ export default function graph_setup() {
   canv.id = "canv";
   canv.width = window.innerWidth;
   canv.height = window.innerHeight;
+  canv.style.cursor = "crosshair";
 
   document.body.appendChild(canv);
 
