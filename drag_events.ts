@@ -23,9 +23,9 @@ export default function drag_setup(graf: Graph) {
     if (
       isPointInCircle(graf.ctc.x, graf.ctc.y, io.pos.x, io.pos.y, io.radius)
     ) {
-      drawLine = true;
-      LineStart = io.pos;
-      selected_io = io;
+      graf.drawLine = true;
+      graf.LineStart = io.pos;
+      graf.selected_io = io;
       return true;
     } else {
       return false;
@@ -39,43 +39,24 @@ export default function drag_setup(graf: Graph) {
       graf.ctc.y > node.pos[1] &&
       graf.ctc.y < node.pos[1] + node.size[1]
     ) {
-      stop = false;
-      // node.Input.forEach((io) => {
-      //   if (ioDrag(io)) return;
-      // });
-      // node.Output.forEach((io) => {
-      //   if (ioDrag(io)) return;
-      // });
+      graf.stop = false;
       node.io.forEach((io) => {
         if (ioDrag(io)) return;
       });
 
-      selected_node = node;
-      starting_pos_offset = {
+      graf.selected_node = node;
+      graf.starting_pos_offset = {
         x: graf.ctc.x - node.pos[0],
         y: graf.ctc.y - node.pos[1],
       };
     }
   }
 
-  var selected_node: GraphNode | undefined = undefined;
-  var starting_pos_offset: Point = { x: 0, y: 0 };
-  let zoom: number = 1.0;
-
-  let drag_offset: Point = { x: 0, y: 0 };
-  let wheelPress: boolean = false;
-
-  let drawLine: boolean = false;
-  let LineStart: Point = { x: 0, y: 0 };
-  let begin_io: GraphNodeIO | undefined = undefined;
-  let selected_io: GraphNodeIO | undefined = undefined;
-  let stop = false;
-
   addEventListener("wheel", (event) => {
-    zoom = event.deltaY < 0 ? 1.1 : 0.9;
+    graf.zoom = event.deltaY < 0 ? 1.1 : 0.9;
 
     graf.ctx.translate(graf.ctc.x, graf.ctc.y);
-    graf.ctx.scale(zoom, zoom);
+    graf.ctx.scale(graf.zoom, graf.zoom);
     graf.ctx.translate(-graf.ctc.x, -graf.ctc.y);
     graf.render();
     event.preventDefault();
@@ -84,13 +65,13 @@ export default function drag_setup(graf: Graph) {
   // Draging graph with cursor wheel
   addEventListener("mousedown", (event) => {
     if (event.button === 1) {
-      drag_offset = getTransformedPoint(event.offsetX, event.offsetY);
-      wheelPress = true;
+      graf.drag_offset = getTransformedPoint(event.offsetX, event.offsetY);
+      graf.wheelPress = true;
     }
 
     if (
-      wheelPress != true &&
-      (selected_node == undefined || selected_io == undefined)
+      graf.wheelPress != true &&
+      (graf.selected_node == undefined || graf.selected_io == undefined)
     ) {
       graf.nodes.forEach((node) => {
         isPointingTo(node);
@@ -100,41 +81,59 @@ export default function drag_setup(graf: Graph) {
 
   addEventListener("mousemove", (event) => {
     graf.ctc = getTransformedPoint(event.offsetX, event.offsetY);
-    graf.ctc.x -= drag_offset.x;
-    graf.ctc.y -= drag_offset.y;
+    graf.ctc.x -= graf.drag_offset.x;
+    graf.ctc.y -= graf.drag_offset.y;
 
-    if (wheelPress === true) {
+    // graf.drag_offset.x -= drag_offset.x;
+    // graf.drag_offset.y -= drag_offset.y;
+
+    if (graf.wheelPress === true) {
       graf.ctx.translate(graf.ctc.x, graf.ctc.y);
       graf.render();
     }
 
-    if (selected_node != undefined && selected_io == undefined) {
-      selected_node.pos = [
-        graf.ctc.x - starting_pos_offset.x,
-        graf.ctc.y - starting_pos_offset.y,
+    if (graf.selected_node != undefined && graf.selected_io == undefined) {
+      graf.selected_node.pos = [
+        graf.ctc.x - graf.starting_pos_offset.x,
+        graf.ctc.y - graf.starting_pos_offset.y,
       ];
 
       graf.render();
     }
-    if (drawLine) {
+    if (graf.drawLine) {
       graf.render();
-      drawIOLineTo(graf.ctx, graf.ctc, LineStart, graf.ctc);
+      drawIOLineTo(graf.ctx, graf.LineStart, graf.ctc);
     }
   });
   addEventListener("mouseup", (event) => {
-    if (event.button === 1 && wheelPress === true) {
-      wheelPress = false;
+    if (event.button === 1 && graf.wheelPress === true) {
+      graf.wheelPress = false;
     }
-    // if (selected_io == undefined) {
-    //   begin_io = selected_io;
-    //   graf.nodes.forEach((node) => {
-    //     isPointingTo(node);
-    //   });
-    //   selected_node.
-    // }
-    selected_node = undefined;
-    selected_io = undefined;
-    drawLine = false;
+
+    if (graf.selected_io != undefined && graf.selected_node != undefined) {
+      let begin_io: GraphNodeIO = graf.selected_io;
+      let srcNodeIndex = graf.nodes.indexOf(graf.selected_node);
+      let prev_node: GraphNode | undefined = undefined;
+      prev_node = graf.selected_node;
+
+      graf.nodes.forEach((node) => {
+        isPointingTo(node);
+      });
+
+      if (
+        begin_io.type != graf.selected_io.type &&
+        prev_node != graf.selected_node
+      ) {
+        let srcIoIndex = graf.nodes[srcNodeIndex].io.indexOf(begin_io);
+        graf.nodes[srcNodeIndex].io[srcIoIndex].pointingTo?.push(
+          graf.selected_io
+        );
+      }
+    }
+
+    graf.selected_node = undefined;
+    graf.selected_io = undefined;
+    graf.drawLine = false;
     graf.render();
   });
 }

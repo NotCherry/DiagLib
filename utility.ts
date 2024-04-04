@@ -28,12 +28,11 @@ export function drawCircle(
 }
 export function drawIOLineTo(
   ctx: CanvasRenderingContext2D,
-  ctc: Point,
   LineStart: Point,
   LineEnd: Point
 ) {
   let x = 50;
-  let sideOffset = ctc.x > LineStart.x ? x : -x;
+  let sideOffset = LineEnd.x > LineStart.x ? x : -x;
   ctx.beginPath();
   ctx.moveTo(LineStart.x, LineStart.y);
   ctx.bezierCurveTo(

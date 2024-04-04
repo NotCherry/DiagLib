@@ -1,17 +1,44 @@
-import GraphNode from "./node";
+import GraphNode, { GraphNodeIO } from "./node";
 import { Point } from "./types";
+import { drawIOLineTo } from "./utility";
 
 class Graph {
   nodes: GraphNode[];
   canvas: HTMLCanvasElement;
   ctx: CanvasRenderingContext2D;
   // where the mouse is with applied transformations
-  ctc: Point = { x: 0, y: 0 };
+  ctc: Point;
+  connectedIO: GraphNodeIO[];
+  zoom: number;
+
+  selected_node: GraphNode | undefined;
+  starting_pos_offset: Point;
+
+  wheelPress: boolean;
+  drag_offset: Point;
+
+  drawLine: boolean;
+  LineStart: Point;
+  selected_io: GraphNodeIO | undefined;
+  stop: boolean;
 
   constructor(canvas: HTMLCanvasElement) {
     this.nodes = [];
     this.canvas = canvas;
     this.ctx = canvas.getContext("2d")!;
+    this.ctc = { x: 0, y: 0 };
+    this.connectedIO = [];
+    this.zoom = 1.0;
+    this.selected_node = undefined;
+    this.starting_pos_offset = { x: 0, y: 0 };
+
+    this.wheelPress = false;
+    this.drag_offset = { x: 0, y: 0 };
+
+    this.drawLine = false;
+    this.LineStart = { x: 0, y: 0 };
+    this.selected_io = undefined;
+    this.stop = false;
   }
 
   render() {
@@ -24,10 +51,23 @@ class Graph {
 
     this.nodes.forEach((node) => {
       node.render(this.ctx);
+      node.io.forEach((io) => {
+        if (io.pointingTo!.length > 0) {
+          this.connectedIO.push(io);
+        }
+      });
     });
+
+    this.connectedIO.forEach((io) => {
+      io.pointingTo?.forEach((pointingTo) => {
+        drawIOLineTo(this.ctx, io.pos, pointingTo!.pos);
+      });
+    });
+    this.connectedIO = [];
   }
 
   addNode(node: GraphNode) {
+    node.graf = this;
     this.nodes.push(node);
   }
 
