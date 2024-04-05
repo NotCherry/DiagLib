@@ -179,9 +179,9 @@ class GraphNode {
   }
 
   drawWidgets(ctx: CanvasRenderingContext2D, graf: Graph) {
-    // this.updateWidgetsPos();
+    this.updateWidgetsPos();
     this.widgets.forEach((widget) => {
-      widget.render(ctx, graf.ctc, graf.zoom);
+      widget.render(ctx, graf);
     });
   }
 }

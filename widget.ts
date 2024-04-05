@@ -1,3 +1,4 @@
+import Graph from "./graph";
 import { Point } from "./types";
 
 interface IWidget {
@@ -16,11 +17,7 @@ export abstract class Widget {
     this.height = args.height || 100;
   }
 
-  abstract render(
-    ctx: CanvasRenderingContext2D,
-    ctc: Point,
-    zoom: number
-  ): void;
+  abstract render(ctx: CanvasRenderingContext2D, graf: Graph): void;
 }
 
 export class TeaxtArea extends Widget {
@@ -35,19 +32,14 @@ export class TeaxtArea extends Widget {
     document.body.appendChild(this.text_area);
   }
 
-  render(ctx: CanvasRenderingContext2D, ctc: Point, zoom: number): void {
+  render(ctx: CanvasRenderingContext2D, graf): void {
     const transform = ctx.getTransform();
 
     this.text_area.style.width = `${this.width * transform.a}px`;
     this.text_area.style.height = `${this.height * transform.d}px`;
-    // this.text_area.style.transform = `translate(${ctc.x}, ${ctc.y}); scale(${
-    //   transform.a
-    // }, ${transform.d}) translate(${-ctc.x}, ${-ctc.y});`;
 
     this.text_area.style.left = `${this.pos.x}px`;
     this.text_area.style.top = `${this.pos.y}px`;
-    this.text_area.style.transform = `scale(${zoom}))`;
-    console.log(this.text_area.style.transform);
-    console.log(ctc.x);
+    // this.text_area.style.transform = `scale(${graf.zoom}))`;
   }
 }

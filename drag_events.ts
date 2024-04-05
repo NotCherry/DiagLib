@@ -52,12 +52,18 @@ export default function drag_setup(graf: Graph) {
     }
   }
 
+  let star_drag_pos = { x: 0, y: 0 };
+
   addEventListener("wheel", (event) => {
     graf.zoom = event.deltaY < 0 ? 1.1 : 0.9;
 
     graf.ctx.translate(graf.ctc.x, graf.ctc.y);
     graf.ctx.scale(graf.zoom, graf.zoom);
     graf.ctx.translate(-graf.ctc.x, -graf.ctc.y);
+
+    // calculate position offset for normal html elements
+    // console.log(1 / graf.zoom);
+
     graf.render();
     event.preventDefault();
   });
@@ -81,14 +87,20 @@ export default function drag_setup(graf: Graph) {
 
   addEventListener("mousemove", (event) => {
     graf.ctc = getTransformedPoint(event.offsetX, event.offsetY);
-    graf.ctc.x -= graf.drag_offset.x;
-    graf.ctc.y -= graf.drag_offset.y;
+    //graf.drag_offset.x = graf.drag_offset.x + graf.ctc.x - star_drag_pos.x;
+    //graf.drag_offset.y = graf.drag_offset.y + graf.ctc.y - star_drag_pos.y;
+    // graf.drag_offset.x = graf.ctc.x - star_drag_pos.x;
+    // graf.drag_offset.y = graf.ctc.y - star_drag_pos.y;
+    // graf.ctc.x -= graf.drag_offset.x;
+    // graf.ctc.y -= graf.drag_offset.y;
 
-    // graf.drag_offset.x -= drag_offset.x;
-    // graf.drag_offset.y -= drag_offset.y;
+    console.log(graf.ctc);
 
     if (graf.wheelPress === true) {
-      graf.ctx.translate(graf.ctc.x, graf.ctc.y);
+      graf.ctx.translate(
+        graf.ctc.x - graf.drag_offset.x,
+        graf.ctc.y - graf.drag_offset.y
+      );
       graf.render();
     }
 
