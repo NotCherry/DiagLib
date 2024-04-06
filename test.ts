@@ -14,12 +14,14 @@ function test_setup(graf: Graph) {
   graf.addNode(node2);
   node.connect(0, 0, node2);
 
-  var node3 = new GraphNode({ title: "Test 2", pos: [900, 100] });
+  var node3 = new GraphNode({ title: "Test 3", pos: [900, 100] });
   node3.addIO({ name: "Input 1", radius: 7, type: "input" });
   node3.addIO({ name: "Input 2", radius: 7, type: "input" });
   graf.addNode(node3);
 
-  var node4 = new GraphNode({ title: "Test 2", pos: [900, 400] });
+  var node4 = new GraphNode({ title: "Test 4", pos: [900, 400] });
+  node4.addIO({ name: "Input r4", radius: 7, type: "input" });
+  node4.addIO({ name: "Input 1", radius: 7, type: "input" });
   node4.addIO({ name: "Input 1", radius: 7, type: "input" });
   graf.addNode(node4);
   node2.connect(0, 0, node3);

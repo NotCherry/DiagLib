@@ -26,13 +26,16 @@ export class GraphNodeIO {
   radius: number;
   type: "input" | "output";
   pointingTo?: GraphNodeIO[];
-
+  pointedBy?: GraphNodeIO;
+  owner: GraphNode;
   constructor(args: GraphNodeIO) {
     this.radius = args.radius || 5;
     this.name = args.name;
     this.type = args.type;
     this.pos = { x: args.pos.x, y: args.pos.y };
     this.pointingTo = [];
+    this.pointedBy = undefined;
+    this.owner = args.owner;
   }
 }
 
@@ -46,8 +49,13 @@ class GraphNode {
   io_output_length: number;
   content: string;
   widgets: Widget[];
-  draw_offset: number;
   graf: Graph | undefined;
+
+  // variables for calculating size of node
+  io_spacing_y: number;
+  elements_y_spacing: number; // between io, widgest, etc
+  total_widgets_height: number;
+  total_io_height: number;
 
   constructor(args: IGraphNode) {
     this.title = args.title || "Node";
@@ -61,10 +69,14 @@ class GraphNode {
     this.io_output_length = 0;
     this.content = "";
     this.widgets = [];
-    this.draw_offset = 30;
+    this.io_spacing_y = 30;
+    this.elements_y_spacing = 45;
+    this.total_io_height = 0;
     this.graf = undefined;
+    this.total_widgets_height = 0;
   }
   render(ctx: CanvasRenderingContext2D) {
+    this.updateNodeSize();
     ctx.fillStyle = this.color || "#222";
     ctx.fillRect(this.pos[0], this.pos[1], this.size[0], this.size[1]);
 
@@ -87,6 +99,29 @@ class GraphNode {
     }
   }
 
+  updateNodeSize() {
+    this.updateIOSize();
+    this.updateWidgetsSize();
+    let size =
+      this.total_io_height +
+      this.total_widgets_height +
+      this.elements_y_spacing -
+      (this.io ? this.io[0].radius : 0);
+    this.size[1] = this.size[1] < size ? size : this.size[1];
+  }
+
+  updateIOSize() {
+    this.total_io_height =
+      Math.max(this.io_input_length, this.io_output_length) * this.io_spacing_y;
+  }
+
+  updateWidgetsSize() {
+    this.total_widgets_height = this.widgets.reduce(
+      (acc, widget) => acc + widget.height,
+      0 + this.elements_y_spacing * this.widgets.length
+    );
+  }
+
   addIO(args: { name: string; radius: number; type: "input" | "output" }) {
     args.radius = args.radius || 10;
     this.io.push(
@@ -94,6 +129,7 @@ class GraphNode {
         ...args,
         pos: { x: 0, y: 0 },
         type: args.type,
+        owner: this,
       })
     );
     if (args.type === "input") {
@@ -102,10 +138,13 @@ class GraphNode {
       this.io_output_length++;
     }
     this.io.sort((a, b) => (a.type === "input" ? -1 : 1));
+
+    this.updateNodeSize();
   }
 
   removeIO(i: GraphNodeIO) {
     this.io = this.io.filter((io) => io !== i);
+    this.updateNodeSize();
   }
 
   updateIOPos() {
@@ -115,13 +154,14 @@ class GraphNode {
       if (io.type === "input") {
         io.pos = {
           x: this.pos[0] + 15,
-          y: this.pos[1] + 45 + inputs * this.draw_offset,
+          y: this.pos[1] + this.elements_y_spacing + inputs * this.io_spacing_y,
         };
         inputs++;
       } else {
         io.pos = {
           x: this.pos[0] + this.size[0] - 15,
-          y: this.pos[1] + 45 + outputs * this.draw_offset,
+          y:
+            this.pos[1] + this.elements_y_spacing + outputs * this.io_spacing_y,
         };
         outputs++;
       }
@@ -142,7 +182,8 @@ class GraphNode {
     this.io.forEach((io, i) => {
       if (io.type === "output") {
         if (srcIOindex === srcIndex) {
-          io.pointingTo?.push(node.io[dstIndex]);
+          this.io[i].pointingTo?.push(node.io[dstIndex]);
+          node.io[dstIndex].pointedBy = this.io[i];
           return;
         }
         srcIOindex++;
@@ -152,36 +193,32 @@ class GraphNode {
 
   addWidget(widget: Widget) {
     this.widgets.push(widget);
-    this.updateIOPos();
+    this.updateNodeSize();
   }
 
   removeWidget(widget: Widget) {
     this.widgets = this.widgets.filter((w) => w !== widget);
+    this.updateNodeSize();
   }
 
   updateWidgetsPos() {
+    let index = 1;
     this.widgets.forEach((widget) => {
       widget.pos = {
         x: this.pos[0] + 10,
-        y:
-          this.pos[1] +
-          Math.max(this.io_input_length, this.io_output_length) *
-            this.draw_offset +
-          40,
+        y: this.pos[1] + this.total_io_height + this.elements_y_spacing * index,
       };
       if (widget.width != this.size[0] - 20) {
         widget.width = this.size[0] - 20;
       }
-      if (widget.height > this.size[1] - 40) {
-        widget.height = this.size[1] - 40;
-      }
+      index++;
     });
   }
 
   drawWidgets(ctx: CanvasRenderingContext2D, graf: Graph) {
     this.updateWidgetsPos();
     this.widgets.forEach((widget) => {
-      widget.render(ctx, graf);
+      widget.render(ctx);
     });
   }
 }

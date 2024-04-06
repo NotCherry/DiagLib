@@ -1,6 +1,5 @@
 import Graph from "./graph";
 import GraphNode, { GraphNodeIO } from "./node";
-import { Point } from "./types";
 import { drawIOLineTo } from "./utility";
 
 export default function drag_setup(graf: Graph) {
@@ -10,12 +9,9 @@ export default function drag_setup(graf: Graph) {
   }
 
   function isPointInCircle(pointX, pointY, circleX, circleY, radius) {
-    // Calculate the distance between the point and the center of the circle
     const distance = Math.sqrt(
       (pointX - circleX) ** 2 + (pointY - circleY) ** 2
     );
-
-    // Check if the distance is less than the radius of the circle
     return distance <= radius;
   }
 
@@ -39,7 +35,6 @@ export default function drag_setup(graf: Graph) {
       graf.ctc.y > node.pos[1] &&
       graf.ctc.y < node.pos[1] + node.size[1]
     ) {
-      graf.stop = false;
       node.io.forEach((io) => {
         if (ioDrag(io)) return;
       });
@@ -52,17 +47,12 @@ export default function drag_setup(graf: Graph) {
     }
   }
 
-  let star_drag_pos = { x: 0, y: 0 };
-
   addEventListener("wheel", (event) => {
     graf.zoom = event.deltaY < 0 ? 1.1 : 0.9;
 
     graf.ctx.translate(graf.ctc.x, graf.ctc.y);
     graf.ctx.scale(graf.zoom, graf.zoom);
     graf.ctx.translate(-graf.ctc.x, -graf.ctc.y);
-
-    // calculate position offset for normal html elements
-    // console.log(1 / graf.zoom);
 
     graf.render();
     event.preventDefault();
@@ -83,19 +73,41 @@ export default function drag_setup(graf: Graph) {
         isPointingTo(node);
       });
     }
+
+    // grab selected node if are currently connnected and reconnect it into new place
+    if (
+      graf.selected_io != undefined &&
+      graf.selected_node != undefined &&
+      graf.selected_io.pointedBy != undefined
+    ) {
+      console.log("reconnecting");
+      if (graf.selected_io.type === "input") {
+        graf.LineStart = graf.selected_io.pointedBy!.pos;
+
+        // the io that is beging of the line (output) remove connection to selected io
+        graf.selected_io.pointedBy!.pointingTo! =
+          graf.selected_io.pointedBy!.pointingTo!.filter(
+            (io) => io != graf.selected_io
+          );
+        // console.log(pointingTo);
+        graf.selected_node = graf.selected_io.pointedBy?.owner;
+        graf.selected_io = graf.selected_io.pointedBy;
+        graf.selected_io.pointedBy = undefined;
+      }
+    }
+  });
+
+  addEventListener("mouseout", (event) => {
+    graf.mouse_out = true;
+  });
+
+  graf.canvas.addEventListener("mouseenter", (event) => {
+    graf.mouse_out = false;
   });
 
   addEventListener("mousemove", (event) => {
-    graf.ctc = getTransformedPoint(event.offsetX, event.offsetY);
-    //graf.drag_offset.x = graf.drag_offset.x + graf.ctc.x - star_drag_pos.x;
-    //graf.drag_offset.y = graf.drag_offset.y + graf.ctc.y - star_drag_pos.y;
-    // graf.drag_offset.x = graf.ctc.x - star_drag_pos.x;
-    // graf.drag_offset.y = graf.ctc.y - star_drag_pos.y;
-    // graf.ctc.x -= graf.drag_offset.x;
-    // graf.ctc.y -= graf.drag_offset.y;
-
-    console.log(graf.ctc);
-
+    if (!graf.mouse_out)
+      graf.ctc = getTransformedPoint(event.offsetX, event.offsetY);
     if (graf.wheelPress === true) {
       graf.ctx.translate(
         graf.ctc.x - graf.drag_offset.x,
@@ -112,7 +124,7 @@ export default function drag_setup(graf: Graph) {
 
       graf.render();
     }
-    if (graf.drawLine) {
+    if (graf.drawLine && graf.selected_io?.pointedBy == undefined) {
       graf.render();
       drawIOLineTo(graf.ctx, graf.LineStart, graf.ctc);
     }
@@ -121,25 +133,24 @@ export default function drag_setup(graf: Graph) {
     if (event.button === 1 && graf.wheelPress === true) {
       graf.wheelPress = false;
     }
-
     if (graf.selected_io != undefined && graf.selected_node != undefined) {
       let begin_io: GraphNodeIO = graf.selected_io;
-      let srcNodeIndex = graf.nodes.indexOf(graf.selected_node);
-      let prev_node: GraphNode | undefined = undefined;
-      prev_node = graf.selected_node;
+      let prev_node: GraphNode | undefined = graf.selected_node;
 
       graf.nodes.forEach((node) => {
         isPointingTo(node);
       });
 
+      console.log(graf.selected_io, begin_io);
+
+      // Check if the selected io is not the same as the begin io and connect it
       if (
         begin_io.type != graf.selected_io.type &&
         prev_node != graf.selected_node
       ) {
-        let srcIoIndex = graf.nodes[srcNodeIndex].io.indexOf(begin_io);
-        graf.nodes[srcNodeIndex].io[srcIoIndex].pointingTo?.push(
-          graf.selected_io
-        );
+        console.log("connecting");
+        begin_io.pointingTo?.push(graf.selected_io);
+        graf.selected_io.pointedBy = begin_io;
       }
     }
 

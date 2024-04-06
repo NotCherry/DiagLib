@@ -17,7 +17,24 @@ export abstract class Widget {
     this.height = args.height || 100;
   }
 
-  abstract render(ctx: CanvasRenderingContext2D, graf: Graph): void;
+  abstract render(ctx: CanvasRenderingContext2D): void;
+}
+
+export function AdjusthtlmElementPos(
+  ctx: CanvasRenderingContext2D,
+  element: HTMLElement,
+  pos: Point,
+  width: number,
+  height: number
+): void {
+  const t = ctx.getTransform();
+  const scale = t.a;
+
+  element.style.width = `${width * scale}px`;
+  element.style.height = `${height * scale}px`;
+
+  element.style.left = `${pos.x * scale + t.e}px`;
+  element.style.top = `${pos.y * scale + t.f}px`;
 }
 
 export class TeaxtArea extends Widget {
@@ -32,14 +49,13 @@ export class TeaxtArea extends Widget {
     document.body.appendChild(this.text_area);
   }
 
-  render(ctx: CanvasRenderingContext2D, graf): void {
-    const transform = ctx.getTransform();
-
-    this.text_area.style.width = `${this.width * transform.a}px`;
-    this.text_area.style.height = `${this.height * transform.d}px`;
-
-    this.text_area.style.left = `${this.pos.x}px`;
-    this.text_area.style.top = `${this.pos.y}px`;
-    // this.text_area.style.transform = `scale(${graf.zoom}))`;
+  render(ctx: CanvasRenderingContext2D): void {
+    AdjusthtlmElementPos(
+      ctx,
+      this.text_area,
+      this.pos,
+      this.width,
+      this.height
+    );
   }
 }
