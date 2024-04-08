@@ -1,3 +1,5 @@
+import Graph from "./graph/graph";
+import { GraphNodeIO } from "./nodes/node";
 import { Point } from "./types";
 
 function formatStringFromInputs(node, format) {
@@ -46,4 +48,44 @@ export function drawIOLineTo(
   ctx.lineWidth = 3;
   ctx.stroke();
   ctx.lineWidth = 1;
+}
+
+export function getTransformedPoint(x, y, graf: Graph) {
+  const originalPoint = new DOMPoint(x, y);
+  return graf.ctx.getTransform().invertSelf().transformPoint(originalPoint);
+}
+
+export function isPointInCircle(pointX, pointY, circleX, circleY, radius) {
+  const distance = Math.sqrt((pointX - circleX) ** 2 + (pointY - circleY) ** 2);
+  return distance <= radius;
+}
+
+export function ioDrag(io: GraphNodeIO, graf: Graph) {
+  if (isPointInCircle(graf.ctc.x, graf.ctc.y, io.pos.x, io.pos.y, io.radius)) {
+    graf.drawLine = true;
+    graf.LineStart = io.pos;
+    graf.selected_io = io;
+    return true;
+  } else {
+    return false;
+  }
+}
+
+export function isPointingTo(node, graf: Graph) {
+  if (
+    graf.ctc.x > node.pos[0] &&
+    graf.ctc.x < node.pos[0] + node.size[0] &&
+    graf.ctc.y > node.pos[1] &&
+    graf.ctc.y < node.pos[1] + node.size[1]
+  ) {
+    node.io.forEach((io) => {
+      if (ioDrag(io, graf)) return;
+    });
+
+    graf.selected_node = node;
+    graf.starting_pos_offset = {
+      x: graf.ctc.x - node.pos[0],
+      y: graf.ctc.y - node.pos[1],
+    };
+  }
 }

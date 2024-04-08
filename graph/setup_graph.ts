@@ -1,6 +1,6 @@
 import Graph from "./graph";
 
-export default function graph_setup() {
+export default () => {
   let canv = document.createElement("canvas");
   canv.id = "canv";
   canv.width = window.innerWidth;
@@ -17,4 +17,4 @@ export default function graph_setup() {
     graf.render();
   });
   return graf;
-}
+};

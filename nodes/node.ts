@@ -1,7 +1,7 @@
-import Graph from "./graph";
-import { Point } from "./types";
-import { drawCircle } from "./utility";
-import { Widget } from "./widget";
+import Graph from "../graph/graph";
+import { Point } from "../types";
+import { drawCircle } from "../utility";
+import { Widget } from "../widget";
 
 export interface IGraphNodeOptions {
   color?: string;

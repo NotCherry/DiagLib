@@ -1,7 +1,7 @@
-import test_setup from "./test";
-import graph_setup from "./graph_setup";
-import drag_setup from "./drag_events";
+import setup_test from "./test/setup_test";
+import setup_graph from "./graph/setup_graph";
+import setup_drag from "./drag/setup_drag";
 
-let graf = graph_setup();
-drag_setup(graf);
-test_setup(graf);
+let graf = setup_graph();
+setup_test(graf);
+setup_drag(graf);

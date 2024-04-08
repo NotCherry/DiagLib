@@ -1,6 +1,6 @@
-import GraphNode, { GraphNodeIO } from "./node";
-import { Point } from "./types";
-import { drawIOLineTo } from "./utility";
+import GraphNode, { GraphNodeIO } from "../nodes/node";
+import { Point } from "../types";
+import { drawIOLineTo } from "../utility";
 
 class Graph {
   nodes: GraphNode[];
@@ -63,6 +63,11 @@ class Graph {
         drawIOLineTo(this.ctx, io.pos, pointingTo!.pos);
       });
     });
+
+    // draf line from current io grabbed
+    if (this.drawLine) {
+      drawIOLineTo(this.ctx, this.LineStart, this.ctc);
+    }
     this.connectedIO = [];
   }
 

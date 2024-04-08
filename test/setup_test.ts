@@ -1,8 +1,8 @@
-import Graph from "./graph";
-import GraphNode from "./node";
-import { TeaxtArea } from "./widget";
+import Graph from "../graph/graph";
+import GraphNode from "../nodes/node";
+import { TeaxtArea } from "../widget";
 
-function test_setup(graf: Graph) {
+export default (graf: Graph) => {
   var node = new GraphNode({ title: "Test", pos: [100, 100] });
   node.addIO({ name: "Input 1", radius: 7, type: "input" });
   node.addIO({ name: "Output 2", radius: 7, type: "output" });
@@ -30,6 +30,4 @@ function test_setup(graf: Graph) {
   node4.addWidget(new TeaxtArea({}));
 
   graf.render();
-}
-
-export default test_setup;
+};
