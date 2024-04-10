@@ -39,7 +39,7 @@ export default () => {
       let prev_node: GraphNode = Graph.nodeMap.get(Graph.selected_node!)!;
 
       Graph.nodes.forEach((node) => {
-        isPointingTo(node, Graph);
+        isPointingTo(node);
       });
 
       let selected_node: GraphNode | undefined = Graph.nodeMap.get(
@@ -60,7 +60,6 @@ export default () => {
           begin_io.pointedBy = selected_io.id;
         }
       }
-      // console.log(selected_io.id, begin_io.id);
     }
 
     Graph.selected_node = undefined;

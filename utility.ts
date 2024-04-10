@@ -50,9 +50,9 @@ export function drawIOLineTo(
   ctx.lineWidth = 1;
 }
 
-export function getTransformedPoint(x, y, graf: Graph) {
+export function getTransformedPoint(x, y) {
   const originalPoint = new DOMPoint(x, y);
-  return graf.ctx.getTransform().invertSelf().transformPoint(originalPoint);
+  return Graph.ctx.getTransform().invertSelf().transformPoint(originalPoint);
 }
 
 export function isPointInCircle(pointX, pointY, circleX, circleY, radius) {
@@ -60,32 +60,34 @@ export function isPointInCircle(pointX, pointY, circleX, circleY, radius) {
   return distance <= radius;
 }
 
-export function ioDrag(io: GraphNodeIO, graf: Graph) {
-  if (isPointInCircle(graf.ctc.x, graf.ctc.y, io.pos.x, io.pos.y, io.radius)) {
-    graf.drawLine = true;
-    graf.LineStart = io.pos;
-    graf.selected_io = io.id;
+export function ioDrag(io: GraphNodeIO) {
+  if (
+    isPointInCircle(Graph.ctc.x, Graph.ctc.y, io.pos.x, io.pos.y, io.radius)
+  ) {
+    Graph.drawLine = true;
+    Graph.LineStart = io.pos;
+    Graph.selected_io = io.id;
     return true;
   } else {
     return false;
   }
 }
 
-export function isPointingTo(node, graf: Graph) {
+export function isPointingTo(node) {
   if (
-    graf.ctc.x > node.pos.x &&
-    graf.ctc.x < node.pos.x + node.size[0] &&
-    graf.ctc.y > node.pos.y &&
-    graf.ctc.y < node.pos.y + node.size[1]
+    Graph.ctc.x > node.pos.x &&
+    Graph.ctc.x < node.pos.x + node.size[0] &&
+    Graph.ctc.y > node.pos.y &&
+    Graph.ctc.y < node.pos.y + node.size[1]
   ) {
     node.io.forEach((io) => {
-      if (ioDrag(io, graf)) return;
+      if (ioDrag(io)) return;
     });
 
-    graf.selected_node = node.id;
-    graf.starting_pos_offset = {
-      x: graf.ctc.x - node.pos.x,
-      y: graf.ctc.y - node.pos.y,
+    Graph.selected_node = node.id;
+    Graph.starting_pos_offset = {
+      x: Graph.ctc.x - node.pos.x,
+      y: Graph.ctc.y - node.pos.y,
     };
   }
 }

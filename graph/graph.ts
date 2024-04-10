@@ -63,9 +63,6 @@ class Graph {
       drawIOLineTo(Graph.ctx, Graph.LineStart, Graph.ctc);
     }
     Graph.connectedIO = [];
-    // console.log(Graph.serializeNodes());
-    // console.log("hello world");
-    // console.log(Graph.nodes);
   }
 
   static addNode(node: GraphNode) {

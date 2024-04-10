@@ -35,7 +35,7 @@ export abstract class Widget {
   abstract render(ctx: CanvasRenderingContext2D): void;
   abstract setup();
   save() {
-    return { type: this.type, id: this.id, owenr: this.owner };
+    return { type: this.type, id: this.id, owner: this.owner };
   }
 }
 

@@ -33,4 +33,6 @@ export default () => {
   inputNode.connect(0, 0, node);
   node.connect(0, 0, node3);
   node2.connect(0, 1, node3);
+
+  Graph.render();
 };

@@ -8,7 +8,7 @@ export default () => {
       (Graph.selected_node == undefined || Graph.selected_io == undefined)
     ) {
       Graph.nodes.forEach((node) => {
-        isPointingTo(node, Graph);
+        isPointingTo(node);
       });
     }
   });

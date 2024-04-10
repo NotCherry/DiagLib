@@ -23,11 +23,7 @@ export default () => {
   // with middle mouse click get starting postion to moving objects
   addEventListener("mousedown", (event) => {
     if (event.button === 1) {
-      Graph.drag_offset = getTransformedPoint(
-        event.offsetX,
-        event.offsetY,
-        Graph
-      );
+      Graph.drag_offset = getTransformedPoint(event.offsetX, event.offsetY);
       Graph.wheelPress = true;
     }
   });
@@ -41,7 +37,7 @@ export default () => {
   // with mouse wheel press grab and change postion of the camera
   addEventListener("mousemove", (event) => {
     if (!Graph.mouse_out)
-      Graph.ctc = getTransformedPoint(event.offsetX, event.offsetY, Graph);
+      Graph.ctc = getTransformedPoint(event.offsetX, event.offsetY);
     if (Graph.wheelPress === true) {
       Graph.ctx.translate(
         Graph.ctc.x - Graph.drag_offset.x,

@@ -20,6 +20,7 @@ export class TeaxtArea extends Widget {
       const target = event.currentTarget as HTMLTextAreaElement;
       data["text"] = target.value;
     });
+    this.text_area.value = data["text"];
   }
 
   render(ctx: CanvasRenderingContext2D): void {
