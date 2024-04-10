@@ -1,26 +1,26 @@
 import Graph from "../../graph/graph";
 import { isPointingTo } from "../../utility";
 
-export default (graf: Graph) => {
+export default () => {
   addEventListener("mousedown", (event) => {
     if (
-      graf.wheelPress != true &&
-      (graf.selected_node == undefined || graf.selected_io == undefined)
+      Graph.wheelPress != true &&
+      (Graph.selected_node == undefined || Graph.selected_io == undefined)
     ) {
-      graf.nodes.forEach((node) => {
-        isPointingTo(node, graf);
+      Graph.nodes.forEach((node) => {
+        isPointingTo(node, Graph);
       });
     }
   });
 
   addEventListener("mousemove", (event) => {
-    if (graf.selected_node != undefined && graf.selected_io == undefined) {
-      graf.nodeMap.get(graf.selected_node!)!.pos = {
-        x: graf.ctc.x - graf.starting_pos_offset.x,
-        y: graf.ctc.y - graf.starting_pos_offset.y,
+    if (Graph.selected_node != undefined && Graph.selected_io == undefined) {
+      Graph.nodeMap.get(Graph.selected_node!)!.pos = {
+        x: Graph.ctc.x - Graph.starting_pos_offset.x,
+        y: Graph.ctc.y - Graph.starting_pos_offset.y,
       };
 
-      graf.render();
+      Graph.render();
     }
   });
 };

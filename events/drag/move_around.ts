@@ -1,55 +1,55 @@
 import Graph from "../../graph/graph";
 import { getTransformedPoint } from "../../utility";
 
-export default (graf: Graph) => {
+export default () => {
   addEventListener("wheel", (event) => {
-    graf.zoom = event.deltaY < 0 ? 1.1 : 0.9;
+    Graph.zoom = event.deltaY < 0 ? 1.1 : 0.9;
 
-    graf.ctx.translate(graf.ctc.x, graf.ctc.y);
-    graf.ctx.scale(graf.zoom, graf.zoom);
-    graf.ctx.translate(-graf.ctc.x, -graf.ctc.y);
+    Graph.ctx.translate(Graph.ctc.x, Graph.ctc.y);
+    Graph.ctx.scale(Graph.zoom, Graph.zoom);
+    Graph.ctx.translate(-Graph.ctc.x, -Graph.ctc.y);
 
-    graf.render();
+    Graph.render();
     event.preventDefault();
   });
   addEventListener("mouseout", (event) => {
-    graf.mouse_out = true;
+    Graph.mouse_out = true;
   });
 
-  graf.canvas.addEventListener("mouseenter", (event) => {
-    graf.mouse_out = false;
+  Graph.canvas.addEventListener("mouseenter", (event) => {
+    Graph.mouse_out = false;
   });
 
   // with middle mouse click get starting postion to moving objects
   addEventListener("mousedown", (event) => {
     if (event.button === 1) {
-      graf.drag_offset = getTransformedPoint(
+      Graph.drag_offset = getTransformedPoint(
         event.offsetX,
         event.offsetY,
-        graf
+        Graph
       );
-      graf.wheelPress = true;
+      Graph.wheelPress = true;
     }
   });
 
   addEventListener("mouseup", (event) => {
-    if (event.button === 1 && graf.wheelPress === true) {
-      graf.wheelPress = false;
+    if (event.button === 1 && Graph.wheelPress === true) {
+      Graph.wheelPress = false;
     }
   });
 
   // with mouse wheel press grab and change postion of the camera
   addEventListener("mousemove", (event) => {
-    if (!graf.mouse_out)
-      graf.ctc = getTransformedPoint(event.offsetX, event.offsetY, graf);
-    if (graf.wheelPress === true) {
-      graf.ctx.translate(
-        graf.ctc.x - graf.drag_offset.x,
-        graf.ctc.y - graf.drag_offset.y
+    if (!Graph.mouse_out)
+      Graph.ctc = getTransformedPoint(event.offsetX, event.offsetY, Graph);
+    if (Graph.wheelPress === true) {
+      Graph.ctx.translate(
+        Graph.ctc.x - Graph.drag_offset.x,
+        Graph.ctc.y - Graph.drag_offset.y
       );
-      graf.render();
+      Graph.render();
     }
   });
 
-  graf.render();
+  Graph.render();
 };

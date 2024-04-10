@@ -27,13 +27,13 @@ export abstract class Widget {
     this.width = args.width || 100;
     this.height = args.height !== undefined ? args.height : 100;
     this.owner = args.owner;
-    // this.graf = args.graf;
     if (this.owner == undefined) {
       throw new Error("Owner is undefined");
     }
   }
 
   abstract render(ctx: CanvasRenderingContext2D): void;
+  abstract setup();
   save() {
     return { type: this.type, id: this.id, owenr: this.owner };
   }

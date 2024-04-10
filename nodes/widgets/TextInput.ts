@@ -10,13 +10,16 @@ export class TeaxtArea extends Widget {
     this.text_area.style.position = "absolute";
     this.text_area.style.width = `${this.width}px`;
     this.text_area.style.height = `${this.height}px`;
-    // let data = Graph.nodeMap.get(this.owner).data;
-    // if (data["text"] == undefined) data["text"] = "";
-    this.text_area.addEventListener("change", (event) => {
-      const target = event.currentTarget as HTMLTextAreaElement;
-      // data["text"] = target.value;
-    });
     document.body.appendChild(this.text_area);
+  }
+
+  setup() {
+    let data = Graph.nodeMap.get(this.owner)!.data;
+    if (data["text"] == undefined) data["text"] = "";
+    this.text_area.addEventListener("input", (event) => {
+      const target = event.currentTarget as HTMLTextAreaElement;
+      data["text"] = target.value;
+    });
   }
 
   render(ctx: CanvasRenderingContext2D): void {

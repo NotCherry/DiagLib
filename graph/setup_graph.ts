@@ -17,7 +17,7 @@ export default () => {
   addEventListener("resize", (event) => {
     canv.width = window.innerWidth;
     canv.height = window.innerHeight;
-    graf.render();
+    Graph.render();
   });
   return graf;
 };
@@ -29,8 +29,8 @@ let NodeType = {
 
 function loadGraph(config: string, graf: Graph) {
   let spec = JSON.parse(config);
-  graf.id = spec.id;
-  graf.name = spec.graph_name;
+  Graph.id = spec.id;
+  Graph.graph_name = spec.graph_name;
   spec.nodes.forEach((node: any) => {
     let { title, type, size, pos, io } = node;
     let n = new GraphNode({ title, type, size, pos, owner: graf });
@@ -45,7 +45,7 @@ function loadGraph(config: string, graf: Graph) {
     });
     // TODO: add widgets
 
-    graf.addNode(n);
+    Graph.addNode(n);
   });
-  graf.render();
+  Graph.render();
 }

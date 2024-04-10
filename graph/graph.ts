@@ -5,88 +5,91 @@ import { drawIOLineTo } from "../utility";
 import { v4 as uuidv4 } from "uuid";
 
 class Graph {
-  id: string = uuidv4();
-  name: string = "Graph";
-  nodes: GraphNode[] = [];
-  canvas: HTMLCanvasElement;
-  ctx: CanvasRenderingContext2D;
+  static id: string = uuidv4();
+  static graph_name: string = "Graph";
+  static nodes: GraphNode[] = [];
+  static canvas: HTMLCanvasElement;
+  static ctx: CanvasRenderingContext2D;
   // where the mouse is with applied transformations
-  ctc: Point = { x: 0, y: 0 };
-  connectedIO: GraphNodeIO[] = [];
-  zoom: number = 1.0;
-  selected_node?: string = undefined;
-  starting_pos_offset: Point = { x: 0, y: 0 };
+  static ctc: Point = { x: 0, y: 0 };
+  static connectedIO: GraphNodeIO[] = [];
+  static zoom: number = 1.0;
+  static selected_node?: string = undefined;
+  static starting_pos_offset: Point = { x: 0, y: 0 };
 
-  wheelPress: boolean = false;
-  mouse_out: boolean = false;
-  drag_offset: Point = { x: 0, y: 0 };
+  static wheelPress: boolean = false;
+  static mouse_out: boolean = false;
+  static drag_offset: Point = { x: 0, y: 0 };
 
-  drawLine: boolean = false;
-  LineStart: Point = { x: 0, y: 0 };
-  selected_io?: string = undefined;
-  stop: boolean;
+  static drawLine: boolean = false;
+  static LineStart: Point = { x: 0, y: 0 };
+  static selected_io?: string = undefined;
+  static stop: boolean;
 
-  nodeMap: Map<string, GraphNode> = new Map();
-  IOMap: Map<string, GraphNodeIO> = new Map();
-  widgetMap: Map<string, Widget> = new Map();
+  static nodeMap: Map<string, GraphNode> = new Map();
+  static IOMap: Map<string, GraphNodeIO> = new Map();
+  static widgetMap: Map<string, Widget> = new Map();
 
   constructor(canvas: HTMLCanvasElement) {
-    this.canvas = canvas;
-    this.ctx = canvas.getContext("2d")!;
+    Graph.canvas = canvas;
+    Graph.ctx = canvas.getContext("2d")!;
   }
 
-  render() {
-    this.ctx.save();
-    this.ctx.setTransform(1, 0, 0, 1, 0, 0);
-    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-    this.ctx.fillStyle = "#111";
-    this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
-    this.ctx.restore();
+  static render() {
+    Graph.ctx.save();
+    Graph.ctx.setTransform(1, 0, 0, 1, 0, 0);
+    Graph.ctx.clearRect(0, 0, Graph.canvas.width, Graph.canvas.height);
+    Graph.ctx.fillStyle = "#111";
+    Graph.ctx.fillRect(0, 0, Graph.canvas.width, Graph.canvas.height);
+    Graph.ctx.restore();
 
-    this.nodes.forEach((node) => {
-      node.render(this.ctx);
+    Graph.nodes.forEach((node) => {
+      node.render(Graph.ctx);
       node.io.forEach((io) => {
         if (io.pointingTo != undefined) {
-          this.connectedIO.push(io);
+          Graph.connectedIO.push(io);
         }
       });
     });
 
-    this.connectedIO.forEach((io) => {
+    Graph.connectedIO.forEach((io) => {
       io.pointingTo?.forEach((dstNode) => {
-        drawIOLineTo(this.ctx, io.pos, this.IOMap.get(dstNode)!.pos);
+        drawIOLineTo(Graph.ctx, io.pos, Graph.IOMap.get(dstNode)!.pos);
       });
     });
 
     // draf line from current io grabbed
-    if (this.drawLine) {
-      drawIOLineTo(this.ctx, this.LineStart, this.ctc);
+    if (Graph.drawLine) {
+      drawIOLineTo(Graph.ctx, Graph.LineStart, Graph.ctc);
     }
-    this.connectedIO = [];
-    // console.log(this.serializeNodes());
+    Graph.connectedIO = [];
+    // console.log(Graph.serializeNodes());
     // console.log("hello world");
-    // console.log(this.nodes);
+    // console.log(Graph.nodes);
   }
 
-  addNode(node: GraphNode) {
-    this.nodes.push(node);
-    this.nodeMap.set(node.id, node);
+  static addNode(node: GraphNode) {
+    Graph.nodes.push(node);
+    Graph.nodeMap.set(node.id, node);
+    Graph.nodeMap.get(node.id)!.widgets.forEach((widget) => {
+      widget.setup();
+    });
   }
 
-  removeNode(node: GraphNode) {
-    this.nodes = this.nodes.filter((n) => n !== node);
-    this.nodeMap.delete(node.id);
+  static removeNode(node: GraphNode) {
+    Graph.nodes = Graph.nodes.filter((n) => n !== node);
+    Graph.nodeMap.delete(node.id);
   }
 
-  serializeNodes() {
-    return this.nodes.map((node) => node.serialize());
+  static serializeNodes() {
+    return Graph.nodes.map((node) => node.serialize());
   }
 
-  saveGraph() {
+  static saveGraph() {
     let diagram = {
-      id: this.id,
-      graph_name: this.name,
-      nodes: this.nodes.map((node) => node.save()),
+      id: Graph.id,
+      graph_name: Graph.name,
+      nodes: Graph.nodes.map((node) => node.save()),
     };
     console.log(JSON.stringify(diagram));
     return JSON.stringify(diagram);

@@ -1,36 +1,34 @@
 import Graph from "../graph/graph";
 import { GenerateNode, GenerateNode2 } from "../nodes/Generate";
 import { InputNode } from "../nodes/InputNode";
-import GraphNode from "../nodes/Node";
-import { TeaxtArea } from "../nodes/widgets/TextInput";
 
-export default (graf: Graph) => {
+export default () => {
   var inputNode = new InputNode({
     title: "Input",
     pos: { x: 100, y: 100 },
-    owner: graf,
+    owner: Graph,
   });
-  graf.addNode(inputNode);
+  Graph.addNode(inputNode);
   var node = new GenerateNode({
     title: "Test",
     pos: { x: 500, y: 400 },
-    owner: graf,
+    owner: Graph,
   });
-  graf.addNode(node);
+  Graph.addNode(node);
 
   var node2 = new GenerateNode({
     title: "Test",
     pos: { x: 500, y: 700 },
-    owner: graf,
+    owner: Graph,
   });
-  graf.addNode(node2);
+  Graph.addNode(node2);
 
   var node3 = new GenerateNode2({
     title: "Test",
     pos: { x: 900, y: 500 },
-    owner: graf,
+    owner: Graph,
   });
-  graf.addNode(node3);
+  Graph.addNode(node3);
 
   inputNode.connect(0, 0, node);
   node.connect(0, 0, node3);

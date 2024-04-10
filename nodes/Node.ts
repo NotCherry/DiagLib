@@ -179,7 +179,7 @@ class GraphNode {
       radius: args.radius || 10,
     });
 
-    this.owner.IOMap.set(io.id, io);
+    Graph.IOMap.set(io.id, io);
     this.io.push(io);
 
     if (args.type === "input") {
@@ -194,7 +194,7 @@ class GraphNode {
 
   removeIO(i: GraphNodeIO) {
     this.io = this.io.filter((io) => io !== i);
-    this.owner.IOMap.delete(i.id);
+    Graph.IOMap.delete(i.id);
     this.updateNodeSize();
   }
 
@@ -256,13 +256,13 @@ class GraphNode {
 
   addWidget(widget: Widget) {
     this.widgets.push(widget);
-    this.owner.widgetMap.set(widget.id, widget);
+    Graph.widgetMap.set(widget.id, widget);
     this.updateNodeSize();
   }
 
   removeWidget(widget: Widget) {
     this.widgets = this.widgets.filter((w) => w !== widget);
-    this.owner.widgetMap.delete(widget.id);
+    Graph.widgetMap.delete(widget.id);
     this.updateNodeSize();
   }
 

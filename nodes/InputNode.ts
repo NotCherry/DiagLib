@@ -7,6 +7,6 @@ export class InputNode extends GraphNode {
     this.title = "Input";
     this.type = "input";
     this.addIO({ name: "output", type: "output" });
-    this.addWidget(new TeaxtArea({ owner: this }));
+    this.addWidget(new TeaxtArea({ owner: this.id }));
   }
 }
