@@ -1,5 +1,5 @@
-import Graph from "../graph/graph";
-import { getTransformedPoint } from "../utility";
+import Graph from "../../graph/graph";
+import { getTransformedPoint } from "../../utility";
 
 export default (graf: Graph) => {
   addEventListener("wheel", (event) => {

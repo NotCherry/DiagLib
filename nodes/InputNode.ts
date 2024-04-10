@@ -1,13 +1,12 @@
-import GraphNode, { IGraphNode } from "../node";
+import GraphNode, { IGraphNode } from "./Node";
+import { TeaxtArea } from "./widgets/TextInput";
 
-interface IInputNode extends IGraphNode {}
-
-export default class InputNode extends GraphNode {
-  constructor(args: IInputNode) {
+export class InputNode extends GraphNode {
+  constructor(args: IGraphNode) {
     super(args);
-  }
-
-  render(ctx: CanvasRenderingContext2D): void {
-    super.render(ctx);
+    this.title = "Input";
+    this.type = "input";
+    this.addIO({ name: "output", type: "output" });
+    this.addWidget(new TeaxtArea({ owner: this }));
   }
 }

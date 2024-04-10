@@ -1,5 +1,5 @@
 import Graph from "./graph/graph";
-import { GraphNodeIO } from "./nodes/node";
+import { GraphNodeIO } from "./nodes/Node";
 import { Point } from "./types";
 
 function formatStringFromInputs(node, format) {
@@ -64,7 +64,7 @@ export function ioDrag(io: GraphNodeIO, graf: Graph) {
   if (isPointInCircle(graf.ctc.x, graf.ctc.y, io.pos.x, io.pos.y, io.radius)) {
     graf.drawLine = true;
     graf.LineStart = io.pos;
-    graf.selected_io = io;
+    graf.selected_io = io.id;
     return true;
   } else {
     return false;
@@ -73,19 +73,19 @@ export function ioDrag(io: GraphNodeIO, graf: Graph) {
 
 export function isPointingTo(node, graf: Graph) {
   if (
-    graf.ctc.x > node.pos[0] &&
-    graf.ctc.x < node.pos[0] + node.size[0] &&
-    graf.ctc.y > node.pos[1] &&
-    graf.ctc.y < node.pos[1] + node.size[1]
+    graf.ctc.x > node.pos.x &&
+    graf.ctc.x < node.pos.x + node.size[0] &&
+    graf.ctc.y > node.pos.y &&
+    graf.ctc.y < node.pos.y + node.size[1]
   ) {
     node.io.forEach((io) => {
       if (ioDrag(io, graf)) return;
     });
 
-    graf.selected_node = node;
+    graf.selected_node = node.id;
     graf.starting_pos_offset = {
-      x: graf.ctc.x - node.pos[0],
-      y: graf.ctc.y - node.pos[1],
+      x: graf.ctc.x - node.pos.x,
+      y: graf.ctc.y - node.pos.y,
     };
   }
 }
