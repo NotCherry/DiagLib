@@ -3,6 +3,8 @@ import { Widget } from "../nodes/widgets/Widget";
 import { Point } from "../types";
 import { drawIOLineTo } from "../utility";
 import { v4 as uuidv4 } from "uuid";
+import { loadGraph } from "./setup_graph";
+import setup_test from "../test/setup_test";
 
 class Graph {
   static id: string = uuidv4();
@@ -25,6 +27,8 @@ class Graph {
   static LineStart: Point = { x: 0, y: 0 };
   static selected_io?: string = undefined;
   static stop: boolean;
+  static drawIO: boolean = true;
+  static eventButton: number = 0;
 
   static nodeMap: Map<string, GraphNode> = new Map();
   static IOMap: Map<string, GraphNodeIO> = new Map();
@@ -33,6 +37,26 @@ class Graph {
   constructor(canvas: HTMLCanvasElement) {
     Graph.canvas = canvas;
     Graph.ctx = canvas.getContext("2d")!;
+  }
+
+  static reset() {
+    Graph.nodeMap = new Map();
+    Graph.IOMap = new Map();
+    Graph.widgetMap = new Map();
+    Graph.nodes.map((n) => n.reset());
+    Graph.nodes = [];
+    Graph.connectedIO = [];
+  }
+
+  static switchHTMLElements() {
+    Graph.widgetMap.forEach((widget) => {
+      if (Graph.selected_node == undefined && Graph.eventButton != 0) {
+        widget.element.style.display =
+          widget.element.style.display == "none" ? "block" : "none";
+      }
+      widget.element.style.pointerEvents =
+        widget.element.style.pointerEvents == "none" ? "auto" : "none";
+    });
   }
 
   static render() {
@@ -52,11 +76,13 @@ class Graph {
       });
     });
 
-    Graph.connectedIO.forEach((io) => {
-      io.pointingTo?.forEach((dstNode) => {
-        drawIOLineTo(Graph.ctx, io.pos, Graph.IOMap.get(dstNode)!.pos);
+    if (Graph.drawIO) {
+      Graph.connectedIO.forEach((io) => {
+        io.pointingTo?.forEach((dstNode) => {
+          drawIOLineTo(Graph.ctx, io.pos, Graph.IOMap.get(dstNode)!.pos);
+        });
       });
-    });
+    }
 
     // draf line from current io grabbed
     if (Graph.drawLine) {
@@ -79,7 +105,7 @@ class Graph {
   }
 
   static serializeNodes() {
-    return Graph.nodes.map((node) => node.serialize());
+    return this.nodes.map((node) => node.serialize());
   }
 
   static saveGraph() {
@@ -88,8 +114,15 @@ class Graph {
       graph_name: Graph.name,
       nodes: Graph.nodes.map((node) => node.save()),
     };
-    console.log(JSON.stringify(diagram));
-    return JSON.stringify(diagram);
+    // console.log(JSON.stringify(diagram));
+    return diagram;
+  }
+  static loadGraph() {
+    Graph.reset();
+    localStorage.getItem("graph") !== null
+      ? loadGraph(localStorage.getItem("graph")!)
+      : setup_test();
+    // setup_test();
   }
 }
 

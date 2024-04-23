@@ -53,7 +53,6 @@ export function loadGraph(config: string) {
       };
       n.addIO(args);
     });
-    // TODO: add widgets
 
     node.widgets.map((widget: any) => {
       let args = {

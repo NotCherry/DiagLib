@@ -19,6 +19,7 @@ export abstract class Widget {
   height: number;
   type: string;
   owner: string;
+  element: HTMLTextAreaElement;
   // graf: Graph;
   constructor(args: IWidget) {
     this.id = args.id || uuidv4();
@@ -34,6 +35,8 @@ export abstract class Widget {
 
   abstract render(ctx: CanvasRenderingContext2D): void;
   abstract setup();
+  abstract validate(): boolean;
+  abstract remove();
   save() {
     return { type: this.type, id: this.id, owner: this.owner };
   }

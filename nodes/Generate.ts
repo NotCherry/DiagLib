@@ -8,7 +8,7 @@ export class GenerateNode extends GraphNode {
     this.type = "generate";
     this.addIO({ name: "1", type: "input" });
     this.addIO({ name: "output", type: "output" });
-    this.addWidget(new TeaxtArea({ owner: this.id }));
+    this.addWidget(new TeaxtArea({ owner: this.id, height: 350 }));
   }
 }
 

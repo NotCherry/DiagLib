@@ -10,7 +10,6 @@ export default () => {
     Graph.ctx.translate(-Graph.ctc.x, -Graph.ctc.y);
 
     Graph.render();
-    event.preventDefault();
   });
   addEventListener("mouseout", (event) => {
     Graph.mouse_out = true;
@@ -22,9 +21,18 @@ export default () => {
 
   // with middle mouse click get starting postion to moving objects
   addEventListener("mousedown", (event) => {
+    console.log(event.button);
     if (event.button === 1) {
-      Graph.drag_offset = getTransformedPoint(event.offsetX, event.offsetY);
+      Graph.switchHTMLElements();
       Graph.wheelPress = true;
+      Graph.drawIO = false;
+      Graph.eventButton == 1;
+      event.target == Graph.canvas;
+      Graph.drag_offset = getTransformedPoint(event.clientX, event.clientY);
+    }
+    if (event.button === 0) {
+      Graph.eventButton == 0;
+      if (event.target == Graph.canvas) Graph.switchHTMLElements();
     }
   });
 
@@ -32,6 +40,15 @@ export default () => {
     if (event.button === 1 && Graph.wheelPress === true) {
       Graph.wheelPress = false;
     }
+    if (event.button === 1) {
+      Graph.drawIO = true;
+      Graph.switchHTMLElements();
+    }
+    if (event.button === 0) {
+      if (event.target == Graph.canvas) Graph.switchHTMLElements();
+    }
+
+    Graph.eventButton == 0;
   });
 
   // with mouse wheel press grab and change postion of the camera

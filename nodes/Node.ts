@@ -1,5 +1,5 @@
 import Graph from "../graph/graph";
-import { Point } from "../types";
+import { NodeType, Point } from "../types";
 import { drawCircle } from "../utility";
 import { Widget } from "./widgets/Widget";
 import { v4 as uuidv4 } from "uuid";
@@ -97,7 +97,7 @@ class GraphNode {
     this.id = args.id || uuidv4();
     this.title = args.title || "Node";
     this.type = args.type || "default";
-    this.size = args.size || [300, 200];
+    this.size = args.size || [500, 300];
     this.pos = args.pos || { x: 100, y: 100 };
     if (args.options) {
       this.color = "black";
@@ -107,15 +107,33 @@ class GraphNode {
   }
 
   serialize() {
-    return {
+    let pointedBy = this.io
+      .filter((io) => io.pointedBy)
+      .map((io) => io.pointedBy)
+      .flat();
+    pointedBy = pointedBy.map((id) => Graph.IOMap.get(id!)?.owner);
+    let pointingTo = this.io
+      .filter((io) => io.pointingTo)
+      .map((io) => io.pointingTo)
+      .flat();
+
+    this.widgets.map((w) => {
+      if (w.validate() !== true) {
+        throw new Error("Validation failed");
+      } else null;
+    });
+
+    pointingTo = pointingTo.map((id) => Graph.IOMap.get(id!)?.owner!);
+
+    let a = {
       id: this.id,
-      node_type: this.type,
+      nodeType: this.type,
       data: this.data,
-      connections: this.io
-        .filter((io) => io.type === "output")
-        .map((io) => io.pointingTo!.map((i) => i))
-        .flat(),
+      pointedBy: pointedBy.length > 0 ? pointedBy : undefined,
+      pointingTo: pointingTo.length > 0 ? pointingTo : undefined,
     };
+
+    return a;
   }
 
   save() {
@@ -145,7 +163,7 @@ class GraphNode {
     ctx.shadowOffsetX = 5;
     ctx.shadowOffsetY = 5;
 
-    ctx.fillStyle = "#444";
+    ctx.fillStyle = this.color || "#444";
     ctx.fillRect(this.pos.x, this.pos.y + 30, this.size[0], 1);
 
     ctx.font = "20px monospace";
@@ -160,6 +178,14 @@ class GraphNode {
         this.drawWidgets(ctx);
       }
     }
+  }
+
+  reset() {
+    this.widgets.map((w) => w.remove());
+  }
+
+  updateData(data: KeyValue) {
+    this.data = data;
   }
 
   updateNodeSize() {

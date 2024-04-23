@@ -5,7 +5,8 @@ export default () => {
   addEventListener("mousedown", (event) => {
     if (
       Graph.wheelPress != true &&
-      (Graph.selected_node == undefined || Graph.selected_io == undefined)
+      (Graph.selected_node == undefined || Graph.selected_io == undefined) &&
+      event.target === Graph.canvas
     ) {
       Graph.nodes.forEach((node) => {
         isPointingTo(node);
