@@ -1,55 +1,54 @@
 import Connection from "../connection";
 import Graph from "../graph/graph";
-import { loadGraph } from "../graph/setup_graph";
 import add_node from "../events/edit/add_node";
 
-const Run = (c: Connection) => {
-  let runBtn = document.createElement("button");
-  runBtn.id = "run-btn";
-  runBtn.textContent = "Run";
-  runBtn.style.position = "absolute";
-  runBtn.style.top = "10px";
-  runBtn.style.right = "10px";
-  runBtn.addEventListener("click", () => {
+const createButton = (text: string) => {
+  let btn = document.createElement("button");
+  btn.classList.add(..."btn".split(" "));
+  btn.textContent = text;
+  return btn;
+};
+
+const Run = () => {
+  let btn = createButton("Run");
+  btn.addEventListener("click", () => {
     let msg = { type: "run", data: Graph.serializeNodes() };
-    c.send(JSON.stringify(msg));
+    Connection.send(JSON.stringify(msg));
   });
-  document.body.appendChild(runBtn);
+  return btn;
 };
 
 const Save = () => {
-  let runBtn = document.createElement("button");
-  runBtn.id = "save-btn";
-  runBtn.textContent = "Save";
-  runBtn.style.position = "absolute";
-  runBtn.style.top = "40px";
-  runBtn.style.right = "10px";
-  runBtn.addEventListener("click", () => {
+  let btn = createButton("Save");
+  btn.addEventListener("click", () => {
     let graph = Graph.saveGraph();
     localStorage.setItem("graph", JSON.stringify(graph));
   });
-  document.body.appendChild(runBtn);
+  return btn;
 };
 
 const Load = () => {
-  let runBtn = document.createElement("button");
-  runBtn.id = "load-btn";
-  runBtn.textContent = "Load";
-  runBtn.style.position = "absolute";
-  runBtn.style.top = "70px";
-  runBtn.style.right = "10px";
-  runBtn.addEventListener("click", () => {
+  let btn = createButton("Load");
+  btn.addEventListener("click", () => {
     Graph.loadGraph();
   });
-  document.body.appendChild(runBtn);
+  return btn;
 };
+
+function tcss(classes: string) {
+  return classes.split(" ");
+}
 
 export default () => {
   console.log("setup_ui");
-  let c = new Connection();
-  Run(c);
-  Save();
-  Load();
-
+  new Connection();
+  let panel = document.createElement("div");
+  panel.classList.add(
+    ..."absolute top-0 left-0 w-full flex justify-end".split(" ")
+  );
+  panel.appendChild(Run());
+  panel.appendChild(Load());
+  panel.appendChild(Save());
+  document.body.appendChild(panel);
   add_node();
 };

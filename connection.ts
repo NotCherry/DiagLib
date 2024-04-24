@@ -1,39 +1,39 @@
 import Graph from "./graph/graph";
-
+import io from "socket.io-client";
 type SocketMessage = {
   type: string;
   data: any;
 };
 
 export default class Connection {
-  conn: WebSocket;
-  lastUpdatedNode: string = "";
+  static conn: any;
+  static lastUpdatedNode: string = "";
   constructor() {
-    this.conn = new WebSocket("ws://cherrydev.duckdns.org:5000");
-    this.conn.onopen = () => {
+    Connection.conn = io("ws://cherrydev.duckdns.org:5000");
+    Connection.conn.onopen = () => {
       console.log("Connection established");
     };
-    this.conn.onmessage = (msg) => {
+    Connection.conn.onmessage = (msg: SocketMessage) => {
       // console.log(msg);
       const req: SocketMessage = JSON.parse(msg.data);
       if (req.type === "update_node") {
         let node = req.data;
-        if (this.lastUpdatedNode !== node.id) {
+        if (Connection.lastUpdatedNode !== node.id) {
           Graph.nodeMap.get(node.id)!.color = "green";
-          if (this.lastUpdatedNode !== "") {
-            Graph.nodeMap.get(this.lastUpdatedNode)!.color = "";
+          if (Connection.lastUpdatedNode !== "") {
+            Graph.nodeMap.get(Connection.lastUpdatedNode)!.color = "";
           }
           Graph.render();
         }
 
-        this.lastUpdatedNode = node.id;
+        Connection.lastUpdatedNode = node.id;
         Graph.nodeMap.get(node.id)?.updateData(node.data);
         Graph.render();
       }
-      this.lastUpdatedNode = "";
+      Connection.lastUpdatedNode = "";
     };
   }
-  send(data: any) {
-    this.conn.send(data);
+  static send(data: any) {
+    Connection.conn.send(data);
   }
 }
