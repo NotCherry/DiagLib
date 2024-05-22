@@ -1,0 +1,28 @@
+{
+  "name": "llmmanui",
+  "version": "1.1.2",
+  "main": "dist/index.js",
+  "type": "module",
+  "files": [
+    "/dist"
+  ],
+  "scripts": {
+    "dev": "esbuild ./src/index.ts --target=esnext --format=esm --bundle --minify --sourcemap --outfile=../frontend/public/webui.js --watch",
+    "test": "esbuild ./src/index.ts --bundle --outfile=../vite-project/src/lib/webui.js --watch",
+    "tt": "rm -rf ./dist && tsc --watch"
+  },
+  "devDependencies": {
+    "@types/uuid": "^9.0.8",
+    "esbuild": "^0.20.2",
+    "tsc": "^2.0.4"
+  },
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "socket.io": "^4.7.5",
+    "socket.io-client": "^4.7.5",
+    "socketio": "^1.0.0",
+    "typescript": "^5.4.5",
+    "uuid": "^9.0.1"
+  }
+}
