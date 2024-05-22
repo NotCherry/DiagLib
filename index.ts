@@ -1,9 +1,6 @@
-import setup_graph, { loadGraph } from "./graph/setup_graph";
-import setup_drag from "./events/drag/setup_drag";
-import setup_ui from "./ui/setup_ui";
-import Graph from "./graph/graph";
+import setup_graph, { loadGraph } from "./setup_graph";
+import setup_drag from "./setup_drag";
 
-setup_graph();
-setup_drag();
-Graph.loadGraph();
-setup_ui();
+export { setup, setViewportSize } from "./graph";
+export { call_load, call_run, call_save } from "./setup_ui";
+// setup_ui();

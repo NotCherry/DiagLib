@@ -1,5 +1,5 @@
 import GraphNode, { IGraphNode } from "./Node";
-import { TeaxtArea } from "./widgets/TextInput";
+import { TeaxtArea } from "./TextInput";
 
 export class InputNode extends GraphNode {
   constructor(args: IGraphNode) {

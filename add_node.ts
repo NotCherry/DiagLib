@@ -1,8 +1,7 @@
-import Graph from "../../graph/graph";
-import { metadata } from "../../../../front/src/app/layout";
-import { InputNode } from "../../nodes/InputNode";
-import { Point } from "../../types";
-import { GenerateNode } from "../../nodes/Generate";
+import Graph from "./graph";
+import { InputNode } from "./InputNode";
+import { Point } from "./types";
+import { GenerateNode } from "./Generate";
 
 var optHeight = 35;
 

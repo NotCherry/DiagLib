@@ -1,7 +1,7 @@
-import GraphNode from "../Node";
-import { Point } from "../../types";
+import GraphNode from "./Node";
+import { Point } from "./types";
 import { v4 as uuidv4 } from "uuid";
-import Graph from "../../graph/graph";
+import Graph from "./graph";
 
 export interface IWidget {
   width?: number;
@@ -51,10 +51,12 @@ export function AdjusthtlmElementPos(
 ): void {
   const t = ctx.getTransform();
   const scale = t.a;
+  let x_offset = Graph.viewport_width - Graph.canvas.width;
+  let y_offset = Graph.viewport_height - Graph.canvas.height;
 
   element.style.width = `${width * scale}px`;
   element.style.height = `${height * scale}px`;
-
-  element.style.left = `${pos.x * scale + t.e}px`;
-  element.style.top = `${pos.y * scale + t.f}px`;
+  // console.log("e", t.e, "f", t.f);
+  element.style.left = `${pos.x * scale + t.e + x_offset}px`;
+  element.style.top = `${pos.y * scale + t.f + y_offset}px`;
 }

@@ -1,10 +1,23 @@
-import GraphNode, { GraphNodeIO } from "../nodes/Node";
-import { Widget } from "../nodes/widgets/Widget";
-import { Point } from "../types";
-import { drawIOLineTo } from "../utility";
+import GraphNode, { GraphNodeIO } from "./Node";
+import { Widget } from "./Widget";
+import { Point } from "./types";
+import { drawIOLineTo } from "./utility";
 import { v4 as uuidv4 } from "uuid";
-import { loadGraph } from "./setup_graph";
-import setup_test from "../test/setup_test";
+import setup_test from "./setup_test";
+
+import setup_graph, { loadGraph } from "./setup_graph";
+import setup_drag from "./setup_drag";
+export function setup(graph?: string) {
+  graph = graph || "";
+  setup_graph();
+  setup_drag();
+  loadGraph(graph);
+}
+
+export function setViewportSize(width: number, height: number) {
+  Graph.viewport_width = width;
+  Graph.viewport_height = height;
+}
 
 class Graph {
   static id: string = uuidv4();
@@ -33,6 +46,9 @@ class Graph {
   static nodeMap: Map<string, GraphNode> = new Map();
   static IOMap: Map<string, GraphNodeIO> = new Map();
   static widgetMap: Map<string, Widget> = new Map();
+
+  static viewport_width: number = 0;
+  static viewport_height: number = 0;
 
   constructor(canvas: HTMLCanvasElement) {
     Graph.canvas = canvas;
@@ -114,14 +130,12 @@ class Graph {
       graph_name: Graph.name,
       nodes: Graph.nodes.map((node) => node.save()),
     };
-    // console.log(JSON.stringify(diagram));
+
     return diagram;
   }
-  static loadGraph() {
+  static loadGraph(graph: string) {
     Graph.reset();
-    localStorage.getItem("graph") !== null
-      ? loadGraph(localStorage.getItem("graph")!)
-      : setup_test();
+    graph !== "" ? loadGraph(graph) : setup_test();
     // setup_test();
   }
 }

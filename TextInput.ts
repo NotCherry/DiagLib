@@ -1,5 +1,5 @@
-import Graph from "../../graph/graph";
-import { KeyValue } from "../Node";
+import Graph from "./graph";
+import { KeyValue } from "./Node";
 import { AdjusthtlmElementPos, IWidget, Widget } from "./Widget";
 
 export class TeaxtArea extends Widget {
@@ -42,7 +42,6 @@ export class TeaxtArea extends Widget {
       data["text"],
       (r, s) => {
         r += s === "}" ? 1 : 0;
-        // console.log(s);
         return r;
       },
       0

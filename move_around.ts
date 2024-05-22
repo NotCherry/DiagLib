@@ -1,8 +1,9 @@
-import Graph from "../../graph/graph";
-import { getTransformedPoint } from "../../utility";
+import Graph from "./graph";
+import { getTransformedPoint } from "./utility";
 
 export default () => {
   addEventListener("wheel", (event) => {
+    event.preventDefault();
     Graph.zoom = event.deltaY < 0 ? 1.1 : 0.9;
 
     Graph.ctx.translate(Graph.ctc.x, Graph.ctc.y);
@@ -21,7 +22,6 @@ export default () => {
 
   // with middle mouse click get starting postion to moving objects
   addEventListener("mousedown", (event) => {
-    console.log(event.button);
     if (event.button === 1) {
       Graph.switchHTMLElements();
       Graph.wheelPress = true;
@@ -54,7 +54,7 @@ export default () => {
   // with mouse wheel press grab and change postion of the camera
   addEventListener("mousemove", (event) => {
     if (!Graph.mouse_out)
-      Graph.ctc = getTransformedPoint(event.offsetX, event.offsetY);
+      Graph.ctc = getTransformedPoint(event.pageX, event.pageY);
     if (Graph.wheelPress === true) {
       Graph.ctx.translate(
         Graph.ctc.x - Graph.drag_offset.x,

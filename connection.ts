@@ -1,4 +1,4 @@
-import Graph from "./graph/graph";
+import Graph from "./graph";
 import io from "socket.io-client";
 type SocketMessage = {
   type: string;

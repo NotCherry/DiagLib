@@ -1,18 +1,13 @@
 import Graph from "./graph";
-import GraphNode from "../nodes/Node";
-import { GenerateNode } from "../nodes/Generate";
-import { InputNode } from "../nodes/InputNode";
-import { TeaxtArea } from "../nodes/widgets/TextInput";
+import GraphNode from "./Node";
+import { GenerateNode } from "./Generate";
+import { InputNode } from "./InputNode";
+import { TeaxtArea } from "./TextInput";
+import setup_test from "./setup_test";
 
 export default () => {
-  let canv = document.createElement("canvas");
-  canv.id = "canv";
-  canv.width = window.innerWidth;
-  canv.height = window.innerHeight;
-  canv.style.cursor = "crosshair";
-
-  document.body.appendChild(canv);
-
+  let canv = document.getElementById("canvas") as HTMLCanvasElement;
+  // document.body.appendChild(canv);
   new Graph(canv);
 
   addEventListener("resize", (event) => {
@@ -20,6 +15,11 @@ export default () => {
     canv.height = window.innerHeight;
     Graph.render();
   });
+  document.onload = () => {
+    canv.width = window.innerWidth;
+    canv.height = window.innerHeight;
+    Graph.render();
+  };
 };
 
 let NodeType = {
@@ -28,6 +28,10 @@ let NodeType = {
 };
 
 export function loadGraph(config: string) {
+  if (config === "") {
+    setup_test();
+    return;
+  }
   let spec = JSON.parse(config);
   Graph.id = spec.id;
   Graph.graph_name = spec.graph_name;

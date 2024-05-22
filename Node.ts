@@ -1,7 +1,7 @@
-import Graph from "../graph/graph";
-import { NodeType, Point } from "../types";
-import { drawCircle } from "../utility";
-import { Widget } from "./widgets/Widget";
+import Graph from "./graph";
+import { NodeType, Point } from "./types";
+import { drawCircle } from "./utility";
+import { Widget } from "./Widget";
 import { v4 as uuidv4 } from "uuid";
 
 export interface IGraphNodeOptions {
@@ -309,10 +309,19 @@ class GraphNode {
 
   updateWidgetsPos() {
     let index = 1;
+    // let scale = Graph.ctx.getTransform().a;
+
+    let x_offset = 0;
+    let y_offset = 0;
+    console.log(x_offset, y_offset);
     this.widgets.forEach((widget) => {
       widget.pos = {
-        x: this.pos.x + 10,
-        y: this.pos.y + this.total_io_height + this.elements_y_spacing * index,
+        x: this.pos.x + x_offset + 10,
+        y:
+          this.pos.y +
+          y_offset +
+          this.total_io_height +
+          this.elements_y_spacing * index,
       };
       if (widget.width != this.size[0] - 20) {
         widget.width = this.size[0] - 20;

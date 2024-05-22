@@ -1,5 +1,5 @@
-import Graph from "./graph/graph";
-import { GraphNodeIO } from "./nodes/Node";
+import Graph from "./graph";
+import { GraphNodeIO } from "./Node";
 import { Point } from "./types";
 
 function formatStringFromInputs(node, format) {
