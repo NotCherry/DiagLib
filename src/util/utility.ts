@@ -62,11 +62,17 @@ export function isPointInCircle(pointX, pointY, circleX, circleY, radius) {
 
 export function ioDrag(io: GraphNodeIO) {
   if (
-    isPointInCircle(Graph.ctc.x, Graph.ctc.y, io.pos.x, io.pos.y, io.radius)
+    isPointInCircle(
+      Graph.cursorPos.x,
+      Graph.cursorPos.y,
+      io.pos.x,
+      io.pos.y,
+      io.radius
+    )
   ) {
     Graph.drawLine = true;
     Graph.LineStart = io.pos;
-    Graph.selected_io = io.id;
+    Graph.selectedIO = io.id;
     return true;
   } else {
     return false;
@@ -82,22 +88,22 @@ export function isPointingTo(node) {
     node.size[1] * Graph.scale
   );
   if (
-    Graph.ctc.x > node.pos.x + Graph.widget_x_offset * Graph.scale &&
-    Graph.ctc.x <
+    Graph.cursorPos.x > node.pos.x + Graph.widgetXOffset * Graph.scale &&
+    Graph.cursorPos.x <
       node.pos.x +
-        Graph.widget_x_offset * Graph.scale +
+        Graph.widgetXOffset * Graph.scale +
         node.size[0] * Graph.scale &&
-    Graph.ctc.y > node.pos.y + Graph.widget_y_offset * Graph.scale &&
-    Graph.ctc.y < node.pos.y + node.size[1] * Graph.scale
+    Graph.cursorPos.y > node.pos.y + Graph.widgetYOffset * Graph.scale &&
+    Graph.cursorPos.y < node.pos.y + node.size[1] * Graph.scale
   ) {
     node.io.forEach((io) => {
       if (ioDrag(io)) return;
     });
 
-    Graph.selected_node = node.id;
-    Graph.starting_pos_offset = {
-      x: Graph.ctc.x - node.pos.x,
-      y: Graph.ctc.y - node.pos.y,
+    Graph.selectedNode = node.id;
+    Graph.dragStartingPosOffset = {
+      x: Graph.cursorPos.x - node.pos.x,
+      y: Graph.cursorPos.y - node.pos.y,
     };
   }
 }

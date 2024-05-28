@@ -13,8 +13,8 @@ export function resizeCanvas() {
   let body = document.querySelector("body") as HTMLBodyElement;
   setViewportSize(body.clientWidth, body.clientHeight);
 
-  Graph.widget_x_offset = Graph.viewport_width - Graph.canvas.width;
-  Graph.widget_y_offset = Graph.viewport_height - Graph.canvas.height;
+  Graph.widgetXOffset = Graph.viewportWidth - Graph.canvas.width;
+  Graph.widgetYOffset = Graph.viewportHeight - Graph.canvas.height;
 }
 
 export default () => {

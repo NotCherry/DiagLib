@@ -9,11 +9,9 @@ import setup_test from "./setup/test";
 import { loadGraph } from "./setup/graph";
 
 export function setViewportSize(width: number, height: number) {
-  Graph.viewport_width = width;
-  Graph.viewport_height = height;
+  Graph.viewportWidth = width;
+  Graph.viewportHeight = height;
 }
-
-interface GenericClass<T> {}
 
 export class Graph {
   static id: string = uuidv4();
@@ -21,20 +19,21 @@ export class Graph {
   static nodes: GraphNode[] = [];
   static canvas: HTMLCanvasElement;
   static ctx: CanvasRenderingContext2D;
+
   // where the mouse is with applied transformations
-  static ctc: Point = { x: 0, y: 0 };
+  static cursorPos: Point = { x: 0, y: 0 };
   static connectedIO: GraphNodeIO[] = [];
   static zoom: number = 1.0;
-  static selected_node?: string = undefined;
-  static starting_pos_offset: Point = { x: 0, y: 0 };
+  static selectedNode?: string = undefined;
+  static dragStartingPosOffset: Point = { x: 0, y: 0 };
 
   static wheelPress: boolean = false;
-  static mouse_out: boolean = false;
-  static drag_offset: Point = { x: 0, y: 0 };
+  static mouseOut: boolean = false;
+  static dragOffset: Point = { x: 0, y: 0 };
 
   static drawLine: boolean = false;
   static LineStart: Point = { x: 0, y: 0 };
-  static selected_io?: string = undefined;
+  static selectedIO?: string = undefined;
   static stop: boolean;
   static drawIO: boolean = true;
   static eventButton: number = 0;
@@ -43,25 +42,24 @@ export class Graph {
   static IOMap: Map<string, GraphNodeIO> = new Map();
   static widgetMap: Map<string, Widget> = new Map();
 
-  static viewport_width: number = 0;
-  static viewport_height: number = 0;
+  static viewportWidth: number = 0;
+  static viewportHeight: number = 0;
 
-  static widget_x_offset: number = 0;
-  static widget_y_offset: number = 0;
+  static widgetXOffset: number = 0;
+  static widgetYOffset: number = 0;
 
   static transforms: DOMMatrix;
   static scale: number = 0;
   static mouse: Point = { x: 0, y: 0 };
 
   static logs: Log;
-  // static registeredNodes: Map<string, GraphNode> = new Map();
   static registeredNodes: any[] = [];
 
   constructor(canvas: HTMLCanvasElement) {
     Graph.canvas = canvas;
     Graph.ctx = canvas.getContext("2d")!;
-    Graph.widget_x_offset = Graph.viewport_width - Graph.canvas.width;
-    Graph.widget_y_offset = Graph.viewport_height - Graph.canvas.height;
+    Graph.widgetXOffset = Graph.viewportWidth - Graph.canvas.width;
+    Graph.widgetYOffset = Graph.viewportHeight - Graph.canvas.height;
     Graph.transforms = Graph.ctx.getTransform();
     Graph.scale = Graph.transforms.a;
     Graph.logs = new Log();
@@ -78,7 +76,7 @@ export class Graph {
 
   static switchHTMLElements() {
     Graph.widgetMap.forEach((widget) => {
-      if (Graph.selected_node == undefined && Graph.eventButton != 0) {
+      if (Graph.selectedNode == undefined && Graph.eventButton != 0) {
         widget.element.style.display =
           widget.element.style.display == "none" ? "block" : "none";
       }
@@ -117,7 +115,7 @@ export class Graph {
 
     // draf line from current io grabbed
     if (Graph.drawLine) {
-      drawIOLineTo(Graph.ctx, Graph.LineStart, Graph.ctc);
+      drawIOLineTo(Graph.ctx, Graph.LineStart, Graph.cursorPos);
     }
     Graph.connectedIO = [];
   }

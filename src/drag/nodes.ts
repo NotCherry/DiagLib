@@ -5,7 +5,7 @@ export default () => {
   addEventListener("mousedown", (event) => {
     if (
       Graph.wheelPress != true &&
-      (Graph.selected_node == undefined || Graph.selected_io == undefined) &&
+      (Graph.selectedNode == undefined || Graph.selectedIO == undefined) &&
       event.target === Graph.canvas
     ) {
       Graph.nodes.forEach((node) => {
@@ -15,10 +15,10 @@ export default () => {
   });
 
   addEventListener("mousemove", (event) => {
-    if (Graph.selected_node != undefined && Graph.selected_io == undefined) {
-      Graph.nodeMap.get(Graph.selected_node!)!.pos = {
-        x: Graph.ctc.x - Graph.starting_pos_offset.x,
-        y: Graph.ctc.y - Graph.starting_pos_offset.y,
+    if (Graph.selectedNode != undefined && Graph.selectedIO == undefined) {
+      Graph.nodeMap.get(Graph.selectedNode!)!.pos = {
+        x: Graph.cursorPos.x - Graph.dragStartingPosOffset.x,
+        y: Graph.cursorPos.y - Graph.dragStartingPosOffset.y,
       };
 
       Graph.render();

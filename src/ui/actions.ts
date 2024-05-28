@@ -10,18 +10,20 @@ function addNode(type: string) {
     return;
   }
 
-  Graph.addNode(new nodeClass({ owner: Graph, title: type, pos: Graph.ctc }));
+  Graph.addNode(
+    new nodeClass({ owner: Graph, title: type, pos: Graph.cursorPos })
+  );
 
   Graph.render();
 }
 
 function deleteNode() {
-  if (Graph.selected_node != undefined || Graph.selected_node != "") {
+  if (Graph.selectedNode != undefined || Graph.selectedNode != "") {
     Graph.logs.addMessage({ type: "info", body: "Node not selected" });
     return;
   }
 
-  Graph.removeNode(Graph.nodeMap.get(Graph.selected_node));
+  Graph.removeNode(Graph.nodeMap.get(Graph.selectedNode));
   Graph.render();
 }
 

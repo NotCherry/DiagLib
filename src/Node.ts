@@ -32,17 +32,17 @@ class GraphNode {
   pos: Point;
   color: string;
   io: GraphNodeIO[] = [];
-  io_input_length: number = 0;
-  io_output_length: number = 0;
+  ioInputLength: number = 0;
+  ioOutputLength: number = 0;
   data: KeyValue = {};
   widgets: Widget[] = [];
 
   // variables for calculating size of node
-  io_spacing_y: number = 30;
-  elements_y_spacing: number = 45; // between io, widgest, etc
-  elements_x_spacing: number = 15;
-  total_widgets_height: number = 0;
-  total_io_height: number = 0;
+  ioSpacingY: number = 30;
+  elementsYSpacing: number = 45; // between io, widgest, etc
+  elementsXSpacing: number = 15;
+  totalWidgetsHeight: number = 0;
+  totalIOHeight: number = 0;
   owner: Graph;
 
   constructor(args: IGraphNode) {
@@ -144,22 +144,22 @@ class GraphNode {
     this.updateIOSize();
     this.updateWidgetsSize();
     let size =
-      this.total_io_height +
-      this.total_widgets_height +
-      this.elements_y_spacing -
+      this.totalIOHeight +
+      this.totalWidgetsHeight +
+      this.elementsYSpacing -
       (this.io.length > 0 ? this.io[0].radius : 0);
     this.size[1] = this.size[1] < size ? size : this.size[1];
   }
 
   updateIOSize() {
-    this.total_io_height =
-      Math.max(this.io_input_length, this.io_output_length) * this.io_spacing_y;
+    this.totalIOHeight =
+      Math.max(this.ioInputLength, this.ioOutputLength) * this.ioSpacingY;
   }
 
   updateWidgetsSize() {
-    this.total_widgets_height = this.widgets.reduce(
+    this.totalWidgetsHeight = this.widgets.reduce(
       (acc, widget) => acc + widget.height,
-      0 + this.elements_y_spacing * this.widgets.length
+      0 + this.elementsYSpacing * this.widgets.length
     );
   }
 
@@ -176,9 +176,9 @@ class GraphNode {
     this.io.push(io);
 
     if (args.type === "input") {
-      this.io_input_length++;
+      this.ioInputLength++;
     } else {
-      this.io_output_length++;
+      this.ioOutputLength++;
     }
     this.io.sort((a, b) => (a.type === "input" ? -1 : 1));
 
@@ -197,14 +197,14 @@ class GraphNode {
     this.io.forEach((io, i) => {
       if (io.type === "input") {
         io.pos = {
-          x: this.pos.x + this.elements_x_spacing,
-          y: this.pos.y + this.elements_y_spacing + inputs * this.io_spacing_y,
+          x: this.pos.x + this.elementsXSpacing,
+          y: this.pos.y + this.elementsYSpacing + inputs * this.ioSpacingY,
         };
         inputs++;
       } else {
         io.pos = {
-          x: this.pos.x + this.size[0] - this.elements_x_spacing,
-          y: this.pos.y + this.elements_y_spacing + outputs * this.io_spacing_y,
+          x: this.pos.x + this.size[0] - this.elementsXSpacing,
+          y: this.pos.y + this.elementsYSpacing + outputs * this.ioSpacingY,
         };
         outputs++;
       }
@@ -220,13 +220,13 @@ class GraphNode {
       if (io.type === "input") {
         ctx.fillText(
           io.name,
-          io.pos.x + this.elements_x_spacing,
+          io.pos.x + this.elementsXSpacing,
           io.pos.y + io.radius / 1.2
         );
       } else {
         ctx.fillText(
           io.name,
-          io.pos.x - ctx.measureText(io.name).width - this.elements_x_spacing,
+          io.pos.x - ctx.measureText(io.name).width - this.elementsXSpacing,
           io.pos.y + io.radius / 2
         );
       }
@@ -271,8 +271,8 @@ class GraphNode {
         y:
           this.pos.y +
           y_offset +
-          this.total_io_height +
-          this.elements_y_spacing * index,
+          this.totalIOHeight +
+          this.elementsYSpacing * index,
       };
       if (widget.width != this.size[0] - 20) {
         widget.width = this.size[0] - 20;

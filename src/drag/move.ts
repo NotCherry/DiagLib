@@ -6,18 +6,18 @@ export default () => {
     event.preventDefault();
     Graph.zoom = event.deltaY < 0 ? 1.1 : 0.9;
 
-    Graph.ctx.translate(Graph.ctc.x, Graph.ctc.y);
+    Graph.ctx.translate(Graph.cursorPos.x, Graph.cursorPos.y);
     Graph.ctx.scale(Graph.zoom, Graph.zoom);
-    Graph.ctx.translate(-Graph.ctc.x, -Graph.ctc.y);
+    Graph.ctx.translate(-Graph.cursorPos.x, -Graph.cursorPos.y);
 
     Graph.render();
   });
   addEventListener("mouseout", (event) => {
-    Graph.mouse_out = true;
+    Graph.mouseOut = true;
   });
 
   Graph.canvas.addEventListener("mouseenter", (event) => {
-    Graph.mouse_out = false;
+    Graph.mouseOut = false;
   });
 
   // with middle mouse click get starting postion to moving objects
@@ -28,7 +28,7 @@ export default () => {
       Graph.drawIO = false;
       Graph.eventButton == 1;
       event.target == Graph.canvas;
-      Graph.drag_offset = getTransformedPoint(event.clientX, event.clientY);
+      Graph.dragOffset = getTransformedPoint(event.clientX, event.clientY);
     }
     if (event.button === 0) {
       Graph.eventButton == 0;
@@ -53,16 +53,16 @@ export default () => {
 
   // with mouse wheel press grab and change postion of the camera
   addEventListener("mousemove", (event) => {
-    if (!Graph.mouse_out)
+    if (!Graph.mouseOut)
       Graph.mouse = {
-        x: event.clientX - Graph.drag_offset.x - Graph.widget_x_offset,
-        y: event.clientY - Graph.transforms.f - Graph.widget_y_offset,
+        x: event.clientX - Graph.dragOffset.x - Graph.widgetXOffset,
+        y: event.clientY - Graph.transforms.f - Graph.widgetYOffset,
       };
-    Graph.ctc = getTransformedPoint(event.clientX, event.clientY);
+    Graph.cursorPos = getTransformedPoint(event.clientX, event.clientY);
     if (Graph.wheelPress === true) {
       Graph.ctx.translate(
-        Graph.ctc.x - Graph.drag_offset.x,
-        Graph.ctc.y - Graph.drag_offset.y
+        Graph.cursorPos.x - Graph.dragOffset.x,
+        Graph.cursorPos.y - Graph.dragOffset.y
       );
       Graph.render();
     }

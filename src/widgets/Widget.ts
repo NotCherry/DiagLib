@@ -53,9 +53,9 @@ export function AdjustElementPos(
   element.style.height = `${height * Graph.scale}px`;
 
   element.style.left = `${
-    pos.x * Graph.scale + Graph.transforms.e + Graph.widget_x_offset
+    pos.x * Graph.scale + Graph.transforms.e + Graph.widgetXOffset
   }px`;
   element.style.top = `${
-    pos.y * Graph.scale + Graph.transforms.f + Graph.widget_y_offset
+    pos.y * Graph.scale + Graph.transforms.f + Graph.widgetYOffset
   }px`;
 }
