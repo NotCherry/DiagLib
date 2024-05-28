@@ -1,8 +1,9 @@
-import Graph from "./graph";
-import { NodeType, Point } from "./types";
-import { drawCircle } from "./utility";
-import { Widget } from "./Widget";
+import Graph from "./Graph";
+import { Point } from "./types";
+import { drawCircle } from "./util/utility";
+import Widget from "./widgets/Widget";
 import { v4 as uuidv4 } from "uuid";
+import GraphNodeIO, { IAddGraphNodeIO } from "./IO";
 
 export interface IGraphNodeOptions {
   color?: string;
@@ -17,55 +18,6 @@ export interface IGraphNode {
   owner: Graph;
   data?: KeyValue;
   options?: IGraphNodeOptions;
-}
-
-export interface IGraphNodeIO {
-  id?: string;
-  name: string;
-  radius?: number;
-  pos?: Point;
-  type: "input" | "output";
-  owner: string;
-  pointingTo?: string[];
-  pointedBy?: string;
-}
-
-export interface IAddGraphNodeIO {
-  id?: string;
-  name: string;
-  radius?: number;
-  type: "input" | "output";
-}
-
-export class GraphNodeIO {
-  id: string = uuidv4();
-  name: string;
-  radius: number;
-  pos: Point;
-  type: "input" | "output";
-  pointingTo: string[];
-  pointedBy?: string;
-  owner: string;
-  constructor(args: IGraphNodeIO) {
-    this.id = args.id || uuidv4();
-    this.radius = args.radius || 7;
-    this.name = args.name;
-    this.type = args.type;
-    this.pos = args.pos ? { x: args.pos.x, y: args.pos.y } : { x: 0, y: 0 };
-    this.pointingTo = args.pointingTo || [];
-    this.pointedBy = args.pointedBy;
-    this.owner = args.owner;
-  }
-  save() {
-    return {
-      type: this.type,
-      name: this.name,
-      id: this.id,
-      owner: this.owner,
-      pointedBy: this.pointedBy,
-      pointingTo: this.pointingTo,
-    };
-  }
 }
 
 export type KeyValue = {
@@ -309,11 +261,10 @@ class GraphNode {
 
   updateWidgetsPos() {
     let index = 1;
-    // let scale = Graph.ctx.getTransform().a;
 
     let x_offset = 0;
     let y_offset = 0;
-    console.log(x_offset, y_offset);
+
     this.widgets.forEach((widget) => {
       widget.pos = {
         x: this.pos.x + x_offset + 10,

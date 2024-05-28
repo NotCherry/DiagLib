@@ -1,30 +1,30 @@
-import Graph from "./graph";
-import GraphNode from "./Node";
-import { GenerateNode } from "./Generate";
-import { InputNode } from "./InputNode";
-import { TeaxtArea } from "./TextInput";
-import setup_test from "./setup_test";
+import Graph, { setViewportSize } from "../Graph";
+import GraphNode from "../Node";
+import { TextArea } from "../widgets/TextInput";
+import setup_test from "./test";
+
+export function resizeCanvas() {
+  let canvas = document.querySelector("canvas#canvas") as HTMLCanvasElement;
+  if (!canvas) {
+    return;
+  }
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  let body = document.querySelector("body") as HTMLBodyElement;
+  setViewportSize(body.clientWidth, body.clientHeight);
+
+  Graph.widget_x_offset = Graph.viewport_width - Graph.canvas.width;
+  Graph.widget_y_offset = Graph.viewport_height - Graph.canvas.height;
+}
 
 export default () => {
   let canv = document.getElementById("canvas") as HTMLCanvasElement;
-  // document.body.appendChild(canv);
   new Graph(canv);
 
   addEventListener("resize", (event) => {
-    canv.width = window.innerWidth;
-    canv.height = window.innerHeight;
+    resizeCanvas();
     Graph.render();
   });
-  document.onload = () => {
-    canv.width = window.innerWidth;
-    canv.height = window.innerHeight;
-    Graph.render();
-  };
-};
-
-let NodeType = {
-  input: InputNode,
-  generate: GenerateNode,
 };
 
 export function loadGraph(config: string) {
@@ -64,7 +64,7 @@ export function loadGraph(config: string) {
         type: widget.type,
         owner: widget.owner,
       };
-      n.addWidget(new TeaxtArea(args));
+      n.addWidget(new TextArea(args));
     });
 
     Graph.addNode(n);

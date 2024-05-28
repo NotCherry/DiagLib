@@ -1,7 +1,7 @@
-import GraphNode from "./Node";
-import { Point } from "./types";
+import GraphNode from "../Node";
+import { Point } from "../types";
 import { v4 as uuidv4 } from "uuid";
-import Graph from "./graph";
+import Graph from "../Graph";
 
 export interface IWidget {
   width?: number;
@@ -12,7 +12,7 @@ export interface IWidget {
   // graf: Graph;
 }
 
-export abstract class Widget {
+export default abstract class Widget {
   id: string;
   pos: Point;
   width: number;
@@ -42,21 +42,20 @@ export abstract class Widget {
   }
 }
 
-export function AdjusthtlmElementPos(
+export function AdjustElementPos(
   ctx: CanvasRenderingContext2D,
   element: HTMLElement,
   pos: Point,
   width: number,
   height: number
 ): void {
-  const t = ctx.getTransform();
-  const scale = t.a;
-  let x_offset = Graph.viewport_width - Graph.canvas.width;
-  let y_offset = Graph.viewport_height - Graph.canvas.height;
+  element.style.width = `${width * Graph.scale}px`;
+  element.style.height = `${height * Graph.scale}px`;
 
-  element.style.width = `${width * scale}px`;
-  element.style.height = `${height * scale}px`;
-  // console.log("e", t.e, "f", t.f);
-  element.style.left = `${pos.x * scale + t.e + x_offset}px`;
-  element.style.top = `${pos.y * scale + t.f + y_offset}px`;
+  element.style.left = `${
+    pos.x * Graph.scale + Graph.transforms.e + Graph.widget_x_offset
+  }px`;
+  element.style.top = `${
+    pos.y * Graph.scale + Graph.transforms.f + Graph.widget_y_offset
+  }px`;
 }

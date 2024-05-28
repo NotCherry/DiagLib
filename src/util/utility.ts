@@ -1,6 +1,6 @@
-import Graph from "./graph";
-import { GraphNodeIO } from "./Node";
-import { Point } from "./types";
+import Graph from "../Graph";
+import GraphNodeIO from "../IO";
+import { Point } from "../types";
 
 function formatStringFromInputs(node, format) {
   if (!node || !node.inputs) {
@@ -74,11 +74,21 @@ export function ioDrag(io: GraphNodeIO) {
 }
 
 export function isPointingTo(node) {
+  console.log("Echo", Graph.mouse.y, node.pos.y);
+  Graph.ctx.fillRect(
+    node.pos.x,
+    node.pos.y,
+    node.size[0] * Graph.scale,
+    node.size[1] * Graph.scale
+  );
   if (
-    Graph.ctc.x > node.pos.x &&
-    Graph.ctc.x < node.pos.x + node.size[0] &&
-    Graph.ctc.y > node.pos.y &&
-    Graph.ctc.y < node.pos.y + node.size[1]
+    Graph.ctc.x > node.pos.x + Graph.widget_x_offset * Graph.scale &&
+    Graph.ctc.x <
+      node.pos.x +
+        Graph.widget_x_offset * Graph.scale +
+        node.size[0] * Graph.scale &&
+    Graph.ctc.y > node.pos.y + Graph.widget_y_offset * Graph.scale &&
+    Graph.ctc.y < node.pos.y + node.size[1] * Graph.scale
   ) {
     node.io.forEach((io) => {
       if (ioDrag(io)) return;

@@ -1,6 +1,6 @@
-import Graph from "./graph";
-import { GenerateNode, GenerateNode2 } from "./Generate";
-import { InputNode } from "./InputNode";
+import Graph from "../Graph";
+import { GenerateNode, GenerateNode2 } from "../nodes/Generate";
+import { InputNode } from "../nodes/InputNode";
 
 export default () => {
   var inputNode = new InputNode({

@@ -1,5 +1,5 @@
-import Graph from "./graph";
-import { isPointingTo } from "./utility";
+import Graph from "../Graph";
+import { isPointingTo } from "../util/utility";
 
 export default () => {
   addEventListener("mousedown", (event) => {

@@ -1,6 +1,7 @@
-import Graph from "./graph";
-import GraphNode, { GraphNodeIO } from "./Node";
-import { drawIOLineTo, isPointingTo } from "./utility";
+import Graph from "../Graph";
+import GraphNodeIO from "../IO";
+import GraphNode from "../Node";
+import { drawIOLineTo, isPointingTo } from "../util/utility";
 
 export default () => {
   addEventListener("mousedown", (event) => {

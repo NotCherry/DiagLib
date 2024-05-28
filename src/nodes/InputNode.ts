@@ -1,5 +1,5 @@
-import GraphNode, { IGraphNode } from "./Node";
-import { TeaxtArea } from "./TextInput";
+import GraphNode, { IGraphNode } from "../Node";
+import { TextArea } from "../widgets/TextInput";
 
 export class InputNode extends GraphNode {
   constructor(args: IGraphNode) {
@@ -7,6 +7,6 @@ export class InputNode extends GraphNode {
     this.title = "Input";
     this.type = "input";
     this.addIO({ name: "output", type: "output" });
-    this.addWidget(new TeaxtArea({ owner: this.id }));
+    this.addWidget(new TextArea({ owner: this.id }));
   }
 }

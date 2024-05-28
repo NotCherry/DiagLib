@@ -1,25 +1,21 @@
-import GraphNode, { GraphNodeIO } from "./Node";
-import { Widget } from "./Widget";
+import GraphNode from "./Node";
+import GraphNodeIO from "./IO";
+import Widget from "./widgets/Widget";
 import { Point } from "./types";
-import { drawIOLineTo } from "./utility";
+import { drawIOLineTo } from "./util/utility";
 import { v4 as uuidv4 } from "uuid";
-import setup_test from "./setup_test";
+import setup_test from "./setup/test";
 
-import setup_graph, { loadGraph } from "./setup_graph";
-import setup_drag from "./setup_drag";
-export function setup(graph?: string) {
-  graph = graph || "";
-  setup_graph();
-  setup_drag();
-  loadGraph(graph);
-}
+import { loadGraph } from "./setup/graph";
 
 export function setViewportSize(width: number, height: number) {
   Graph.viewport_width = width;
   Graph.viewport_height = height;
 }
 
-class Graph {
+interface GenericClass<T> {}
+
+export class Graph {
   static id: string = uuidv4();
   static graph_name: string = "Graph";
   static nodes: GraphNode[] = [];
@@ -50,9 +46,25 @@ class Graph {
   static viewport_width: number = 0;
   static viewport_height: number = 0;
 
+  static widget_x_offset: number = 0;
+  static widget_y_offset: number = 0;
+
+  static transforms: DOMMatrix;
+  static scale: number = 0;
+  static mouse: Point = { x: 0, y: 0 };
+
+  static logs: Log;
+  // static registeredNodes: Map<string, GraphNode> = new Map();
+  static registeredNodes: any[] = [];
+
   constructor(canvas: HTMLCanvasElement) {
     Graph.canvas = canvas;
     Graph.ctx = canvas.getContext("2d")!;
+    Graph.widget_x_offset = Graph.viewport_width - Graph.canvas.width;
+    Graph.widget_y_offset = Graph.viewport_height - Graph.canvas.height;
+    Graph.transforms = Graph.ctx.getTransform();
+    Graph.scale = Graph.transforms.a;
+    Graph.logs = new Log();
   }
 
   static reset() {
@@ -83,6 +95,9 @@ class Graph {
     Graph.ctx.fillRect(0, 0, Graph.canvas.width, Graph.canvas.height);
     Graph.ctx.restore();
 
+    Graph.transforms = Graph.ctx.getTransform();
+    Graph.scale = Graph.transforms.a;
+
     Graph.nodes.forEach((node) => {
       node.render(Graph.ctx);
       node.io.forEach((io) => {
@@ -105,6 +120,10 @@ class Graph {
       drawIOLineTo(Graph.ctx, Graph.LineStart, Graph.ctc);
     }
     Graph.connectedIO = [];
+  }
+
+  static registerNode(title: string, node: any) {
+    Graph.registeredNodes.push(title, node);
   }
 
   static addNode(node: GraphNode) {

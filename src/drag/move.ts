@@ -1,5 +1,5 @@
-import Graph from "./graph";
-import { getTransformedPoint } from "./utility";
+import Graph from "../Graph";
+import { getTransformedPoint } from "../util/utility";
 
 export default () => {
   addEventListener("wheel", (event) => {
@@ -54,7 +54,11 @@ export default () => {
   // with mouse wheel press grab and change postion of the camera
   addEventListener("mousemove", (event) => {
     if (!Graph.mouse_out)
-      Graph.ctc = getTransformedPoint(event.pageX, event.pageY);
+      Graph.mouse = {
+        x: event.clientX - Graph.drag_offset.x - Graph.widget_x_offset,
+        y: event.clientY - Graph.transforms.f - Graph.widget_y_offset,
+      };
+    Graph.ctc = getTransformedPoint(event.clientX, event.clientY);
     if (Graph.wheelPress === true) {
       Graph.ctx.translate(
         Graph.ctc.x - Graph.drag_offset.x,

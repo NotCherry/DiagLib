@@ -1,8 +1,7 @@
-import Graph from "./graph";
-import { KeyValue } from "./Node";
-import { AdjusthtlmElementPos, IWidget, Widget } from "./Widget";
+import Graph from "../Graph";
+import Widget, { AdjustElementPos, IWidget } from "./Widget";
 
-export class TeaxtArea extends Widget {
+export class TextArea extends Widget {
   constructor(args: IWidget) {
     super(args);
     //this.width = Graph.nodeMap.get(this.owner)!.;
@@ -25,7 +24,7 @@ export class TeaxtArea extends Widget {
   }
 
   render(ctx: CanvasRenderingContext2D): void {
-    AdjusthtlmElementPos(ctx, this.element, this.pos, this.width, this.height);
+    AdjustElementPos(ctx, this.element, this.pos, this.width, this.height);
     let data = Graph.nodeMap.get(this.owner)!.data;
     this.element.value = data["text"];
   }
@@ -51,7 +50,7 @@ export class TeaxtArea extends Widget {
       Graph.nodeMap.get(this.owner)!.color = "red";
       Graph.render();
       alert(
-        `The number of inputs to node do not matched reqyired required ${bracketCount} vs ${usedIOlenght}  Node title: ${title}}`
+        `The number of inputs to node do not matched required required ${bracketCount} vs ${usedIOlenght}  Node title: ${title}}`
       );
       return false;
     } else {
