@@ -45,6 +45,7 @@ class GraphNode {
   totalIOHeight: number = 0;
   owner: Graph;
 
+  element: HTMLSpanElement;
   constructor(args: IGraphNode) {
     this.id = args.id || uuidv4();
     this.title = args.title || "Node";
@@ -130,6 +131,12 @@ class GraphNode {
         this.drawWidgets(ctx);
       }
     }
+
+    // this.element = document.createElement("span");
+    // this.element.style.position = "absolute";
+    // this.element.style.width = `${this.width}px`;
+    // this.element.style.height = `${this.height}px`;
+    // document.body.appendChild(this.element);
   }
 
   reset() {
@@ -284,7 +291,7 @@ class GraphNode {
   drawWidgets(ctx: CanvasRenderingContext2D) {
     this.updateWidgetsPos();
     this.widgets.forEach((widget) => {
-      widget.render(ctx);
+      widget.render();
     });
   }
 }

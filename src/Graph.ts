@@ -5,6 +5,7 @@ import { Point } from "./types";
 import { drawIOLineTo } from "./util/utility";
 import { v4 as uuidv4 } from "uuid";
 import setup_test from "./setup/test";
+import Log from "./util/log";
 
 import { loadGraph } from "./setup/graph";
 

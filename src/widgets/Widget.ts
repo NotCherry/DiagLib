@@ -33,7 +33,7 @@ export default abstract class Widget {
     }
   }
 
-  abstract render(ctx: CanvasRenderingContext2D): void;
+  abstract render(): void;
   abstract setup();
   abstract validate(): boolean;
   abstract remove();
@@ -43,7 +43,6 @@ export default abstract class Widget {
 }
 
 export function AdjustElementPos(
-  ctx: CanvasRenderingContext2D,
   element: HTMLElement,
   pos: Point,
   width: number,

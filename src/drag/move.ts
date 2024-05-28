@@ -1,4 +1,5 @@
 import Graph from "../Graph";
+import graph from "../setup/graph";
 import { getTransformedPoint } from "../util/utility";
 
 export default () => {
@@ -55,14 +56,18 @@ export default () => {
   addEventListener("mousemove", (event) => {
     if (!Graph.mouseOut)
       Graph.mouse = {
-        x: event.clientX - Graph.dragOffset.x - Graph.widgetXOffset,
-        y: event.clientY - Graph.transforms.f - Graph.widgetYOffset,
+        x: event.offsetX - Graph.dragOffset.x - Graph.widgetXOffset,
+        y: event.offsetY - Graph.dragOffset.y - Graph.widgetYOffset,
       };
-    Graph.cursorPos = getTransformedPoint(event.clientX, event.clientY);
+    Graph.cursorPos = getTransformedPoint(event.offsetX, event.offsetY);
     if (Graph.wheelPress === true) {
       Graph.ctx.translate(
-        Graph.cursorPos.x - Graph.dragOffset.x,
-        Graph.cursorPos.y - Graph.dragOffset.y
+        Graph.cursorPos.x -
+          Graph.dragOffset.x +
+          Graph.widgetXOffset / Graph.scale,
+        Graph.cursorPos.y -
+          Graph.dragOffset.y +
+          Graph.widgetYOffset / Graph.scale
       );
       Graph.render();
     }

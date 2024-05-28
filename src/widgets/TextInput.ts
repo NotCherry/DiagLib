@@ -6,6 +6,7 @@ export class TextArea extends Widget {
     super(args);
     //this.width = Graph.nodeMap.get(this.owner)!.;
     this.element = document.createElement("textarea");
+    this.element.style.zIndex = "1";
     this.element.id = "TEXTAREA";
     this.element.style.position = "absolute";
     this.element.style.width = `${this.width}px`;
@@ -23,8 +24,8 @@ export class TextArea extends Widget {
     this.element.value = data["text"];
   }
 
-  render(ctx: CanvasRenderingContext2D): void {
-    AdjustElementPos(ctx, this.element, this.pos, this.width, this.height);
+  render(): void {
+    AdjustElementPos(this.element, this.pos, this.width, this.height);
     let data = Graph.nodeMap.get(this.owner)!.data;
     this.element.value = data["text"];
   }

@@ -80,21 +80,11 @@ export function ioDrag(io: GraphNodeIO) {
 }
 
 export function isPointingTo(node) {
-  console.log("Echo", Graph.mouse.y, node.pos.y);
-  Graph.ctx.fillRect(
-    node.pos.x,
-    node.pos.y,
-    node.size[0] * Graph.scale,
-    node.size[1] * Graph.scale
-  );
   if (
-    Graph.cursorPos.x > node.pos.x + Graph.widgetXOffset * Graph.scale &&
-    Graph.cursorPos.x <
-      node.pos.x +
-        Graph.widgetXOffset * Graph.scale +
-        node.size[0] * Graph.scale &&
-    Graph.cursorPos.y > node.pos.y + Graph.widgetYOffset * Graph.scale &&
-    Graph.cursorPos.y < node.pos.y + node.size[1] * Graph.scale
+    Graph.cursorPos.x > node.pos.x &&
+    Graph.cursorPos.x < node.pos.x + node.size[0] &&
+    Graph.cursorPos.y > node.pos.y &&
+    Graph.cursorPos.y < node.pos.y + node.size[1]
   ) {
     node.io.forEach((io) => {
       if (ioDrag(io)) return;

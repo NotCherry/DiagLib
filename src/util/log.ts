@@ -3,7 +3,7 @@ class Message {
   type: string;
 }
 
-class Log {
+export default class Log {
   static messages: Message[];
 
   constructor() {
