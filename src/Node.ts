@@ -11,9 +11,9 @@ export interface IGraphNodeOptions {
 
 export interface IGraphNode {
   id?: string;
-  title: string;
+  title?: string;
   size?: number[];
-  pos: Point;
+  pos?: Point;
   type?: string;
   owner: Graph;
   data?: KeyValue;
@@ -51,12 +51,16 @@ class GraphNode {
     this.title = args.title || "Node";
     this.type = args.type || "default";
     this.size = args.size || [500, 300];
-    this.pos = args.pos || { x: 100, y: 100 };
+    this.pos = args.pos || { x: Graph.cursorPos.x, y: Graph.cursorPos.y };
     if (args.options) {
       this.color = "black";
     }
     this.owner = args.owner;
     this.data = args.data || {};
+  }
+
+  removeAllWidgets() {
+    this.widgets.map((w) => w.remove());
   }
 
   serialize() {
@@ -131,12 +135,6 @@ class GraphNode {
         this.drawWidgets(ctx);
       }
     }
-
-    // this.element = document.createElement("span");
-    // this.element.style.position = "absolute";
-    // this.element.style.width = `${this.width}px`;
-    // this.element.style.height = `${this.height}px`;
-    // document.body.appendChild(this.element);
   }
 
   reset() {
@@ -183,9 +181,9 @@ class GraphNode {
     this.io.push(io);
 
     if (args.type === "input") {
-      this.ioInputLength++;
+      this.ioInputLength += 1;
     } else {
-      this.ioOutputLength++;
+      this.ioOutputLength += 1;
     }
     this.io.sort((a, b) => (a.type === "input" ? -1 : 1));
 
@@ -193,9 +191,22 @@ class GraphNode {
   }
 
   removeIO(i: GraphNodeIO) {
+    if (i.type === "input") {
+      this.ioInputLength -= 1;
+    } else {
+      this.ioOutputLength -= 1;
+    }
     this.io = this.io.filter((io) => io !== i);
     Graph.IOMap.delete(i.id);
     this.updateNodeSize();
+
+    let index = 0;
+    this.io.forEach((io) => {
+      if (io.type === i.type) {
+        io.name = (index + 1).toString();
+        index++;
+      }
+    });
   }
 
   updateIOPos() {

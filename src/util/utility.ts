@@ -70,30 +70,54 @@ export function ioDrag(io: GraphNodeIO) {
       io.radius
     )
   ) {
-    Graph.drawLine = true;
-    Graph.LineStart = io.pos;
-    Graph.selectedIO = io.id;
-    return true;
+    return io.id;
   } else {
-    return false;
+    return undefined;
   }
 }
 
-export function isPointingTo(node) {
-  if (
-    Graph.cursorPos.x > node.pos.x &&
-    Graph.cursorPos.x < node.pos.x + node.size[0] &&
-    Graph.cursorPos.y > node.pos.y &&
-    Graph.cursorPos.y < node.pos.y + node.size[1]
-  ) {
-    node.io.forEach((io) => {
-      if (ioDrag(io)) return;
-    });
+export function isPointingTo() {
+  let output = { type: undefined, id: undefined };
+  for (let i = Graph.nodes.length - 1; i >= 0; i--) {
+    let node = Graph.nodes[i];
+    if (
+      Graph.cursorPos.x > node.pos.x &&
+      Graph.cursorPos.x < node.pos.x + node.size[0] &&
+      Graph.cursorPos.y > node.pos.y &&
+      Graph.cursorPos.y < node.pos.y + node.size[1]
+    ) {
+      for (let j = 0; j < Graph.nodes[i].io.length; j++) {
+        let ioID = ioDrag(Graph.nodes[i].io[j]);
+        if (ioID !== undefined) {
+          // for conecting io
+          Graph.selectedIO = ioID;
+          if (Graph.mouseBtn === 0) {
+            Graph.drawLine = true;
+            Graph.LineStart = Graph.IOMap.get(ioID)!.pos;
+          }
 
-    Graph.selectedNode = node.id;
-    Graph.dragStartingPosOffset = {
-      x: Graph.cursorPos.x - node.pos.x,
-      y: Graph.cursorPos.y - node.pos.y,
-    };
+          output = { type: "io", id: ioID };
+          break;
+        }
+      }
+      //for drag to work
+      Graph.selectedNode = node.id;
+
+      if (output.type == undefined) {
+        output = { type: "node", id: node.id };
+        break;
+      }
+    }
   }
+
+  return output;
+}
+
+export function setSelectedElements() {
+  isPointingTo();
+  // if (element.type == "io") {
+  //   Graph.selectedIO = element.id;
+  // } else if (element.type == "node") {
+  //   Graph.selectedNode = element.id;
+  // }
 }

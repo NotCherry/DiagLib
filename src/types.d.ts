@@ -3,6 +3,11 @@ export type Point = {
   y: number;
 };
 
+export type GUIElement = {
+  type: string | undefined;
+  id: string | undefined;
+};
+
 export enum NodeType {
   Generate,
   Input,

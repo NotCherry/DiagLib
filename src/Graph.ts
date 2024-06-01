@@ -1,7 +1,7 @@
 import GraphNode from "./Node";
 import GraphNodeIO from "./IO";
 import Widget from "./widgets/Widget";
-import { Point } from "./types";
+import { GUIElement, Point } from "./types";
 import { drawIOLineTo } from "./util/utility";
 import { v4 as uuidv4 } from "uuid";
 import setup_test from "./setup/test";
@@ -38,6 +38,7 @@ export class Graph {
   static stop: boolean;
   static drawIO: boolean = true;
   static eventButton: number = 0;
+  static cursorAt: GUIElement = { type: undefined, id: undefined };
 
   static nodeMap: Map<string, GraphNode> = new Map();
   static IOMap: Map<string, GraphNodeIO> = new Map();
@@ -55,6 +56,8 @@ export class Graph {
 
   static logs: Log;
   static registeredNodes: any[] = [];
+
+  static mouseBtn: number | undefined = undefined;
 
   constructor(canvas: HTMLCanvasElement) {
     Graph.canvas = canvas;
@@ -122,7 +125,7 @@ export class Graph {
   }
 
   static registerNode(title: string, node: any) {
-    Graph.registeredNodes.push(title, node);
+    Graph.registeredNodes.push({ title, node });
   }
 
   static addNode(node: GraphNode) {
@@ -131,9 +134,24 @@ export class Graph {
     Graph.nodeMap.get(node.id)!.widgets.forEach((widget) => {
       widget.setup();
     });
+    Graph.render();
   }
 
   static removeNode(node: GraphNode) {
+    node.removeAllWidgets();
+    node.io.forEach((io) => {
+      if (io.type === "input" && io.pointedBy != undefined) {
+        let srcIO = Graph.IOMap.get(io.pointedBy)!;
+        srcIO.pointingTo = srcIO.pointingTo.filter((id) => id != io.id);
+      } else {
+        if (io.pointingTo != undefined) {
+          io.pointingTo.forEach((id) => {
+            let dstIO = Graph.IOMap.get(id)!;
+            dstIO.pointedBy = undefined;
+          });
+        }
+      }
+    });
     Graph.nodes = Graph.nodes.filter((n) => n !== node);
     Graph.nodeMap.delete(node.id);
   }
@@ -156,6 +174,13 @@ export class Graph {
     graph !== "" ? loadGraph(graph) : setup_test();
     // setup_test();
   }
+
+  // static getSelectedNode() {
+  //   return Graph.selectedNode;
+  // }
+  // static getSelectedIO() {
+  //   return Graph.selectedIO;
+  // }
 }
 
 export default Graph;

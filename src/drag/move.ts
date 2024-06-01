@@ -23,6 +23,8 @@ export default () => {
 
   // with middle mouse click get starting postion to moving objects
   addEventListener("mousedown", (event) => {
+    Graph.mouseBtn = event.button;
+
     if (event.button === 1) {
       Graph.switchHTMLElements();
       Graph.wheelPress = true;
@@ -38,6 +40,8 @@ export default () => {
   });
 
   addEventListener("mouseup", (event) => {
+    Graph.mouseBtn = undefined;
+
     if (event.button === 1 && Graph.wheelPress === true) {
       Graph.wheelPress = false;
     }
@@ -59,8 +63,11 @@ export default () => {
         x: event.offsetX - Graph.dragOffset.x - Graph.widgetXOffset,
         y: event.offsetY - Graph.dragOffset.y - Graph.widgetYOffset,
       };
-    Graph.cursorPos = getTransformedPoint(event.offsetX, event.offsetY);
-    if (Graph.wheelPress === true) {
+
+    if (event.target === Graph.canvas)
+      Graph.cursorPos = getTransformedPoint(event.offsetX, event.offsetY);
+
+    if (Graph.wheelPress === true && Graph.mouseOut === false) {
       Graph.ctx.translate(
         Graph.cursorPos.x -
           Graph.dragOffset.x +

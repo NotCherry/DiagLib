@@ -1,8 +1,10 @@
 import Graph from "../Graph";
+import GraphNodeIO from "../IO";
 import GraphNode from "../Node";
+import graph from "../setup/graph";
 import Connection from "../util/connection";
 
-function addNode(type: string) {
+export function addNode(type: string) {
   let nodeClass = Graph.registeredNodes.find((n) => n.title == type);
 
   if (nodeClass == undefined) {
@@ -17,27 +19,31 @@ function addNode(type: string) {
   Graph.render();
 }
 
-function deleteNode() {
-  if (Graph.selectedNode != undefined || Graph.selectedNode != "") {
+export function deleteNode() {
+  if (Graph.cursorAt.type != "node") {
     Graph.logs.addMessage({ type: "info", body: "Node not selected" });
+    console.log(Graph.logs);
     return;
   }
 
-  Graph.removeNode(Graph.nodeMap.get(Graph.selectedNode));
+  Graph.removeNode(Graph.nodeMap.get(Graph.cursorAt.id));
   Graph.render();
 }
 
-function addIOToNode(node: GraphNode, type: "input" | "output", name) {
-  node.addIO({ name, type });
+export function addIOToNode() {
+  let node = Graph.nodeMap.get(Graph.cursorAt.id!);
+  node.addIO({ name: (node.ioInputLength + 1).toString(), type: "input" });
   Graph.render();
 }
 
-function removeIOFromNode(node: GraphNode, io) {
+export function removeIOFromNode() {
+  let io = Graph.IOMap.get(Graph.cursorAt.id!);
+  let node = Graph.nodeMap.get(io.owner);
   node.removeIO(io);
   Graph.render();
 }
 
-function resizeNode(node: GraphNode, width: number, height: number) {
+export function resizeNode(node: GraphNode, width: number, height: number) {
   node.size = [width, height];
   Graph.render();
 }
