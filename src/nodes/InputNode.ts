@@ -6,7 +6,7 @@ export class InputNode extends GraphNode {
     super(args);
     this.title = "Input";
     this.type = "input";
+    this.size = [150, 50];
     this.addIO({ name: "output", type: "output" });
-    this.addWidget(new TextArea({ owner: this.id }));
   }
 }
