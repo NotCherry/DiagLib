@@ -1,38 +1,43 @@
 import Graph from "../Graph";
-import { GenerateNode, GenerateNode2 } from "../nodes/Generate";
+import { GenerateNode } from "../nodes/GenerateNode";
 import { InputNode } from "../nodes/InputNode";
+import { OutputNode } from "../nodes/OutputNode";
 
 export default () => {
-  var inputNode = new InputNode({
+  console.info("Test setup");
+
+  var inputNode1 = new InputNode({
     title: "Input",
     pos: { x: 100, y: 100 },
     owner: Graph,
   });
-  Graph.addNode(inputNode);
-  var node = new GenerateNode({
-    title: "Test",
-    pos: { x: 500, y: 400 },
+  Graph.addNode(inputNode1);
+
+  var inputNode2 = new InputNode({
+    title: "Input",
+    pos: { x: 100, y: 200 },
     owner: Graph,
   });
-  Graph.addNode(node);
+  Graph.addNode(inputNode2);
 
-  var node2 = new GenerateNode({
+  var genNode1 = new GenerateNode({
     title: "Test",
-    pos: { x: 500, y: 700 },
+    pos: { x: 300, y: 100 },
+    owner: Graph,
+    data: { text: "{1} is better than {2}" },
+  });
+  Graph.addNode(genNode1);
+
+  var outputNode1 = new OutputNode({
+    title: "Test",
+    pos: { x: 900, y: 100 },
     owner: Graph,
   });
-  Graph.addNode(node2);
+  Graph.addNode(outputNode1);
 
-  var node3 = new GenerateNode2({
-    title: "Test",
-    pos: { x: 900, y: 500 },
-    owner: Graph,
-  });
-  Graph.addNode(node3);
-
-  inputNode.connect(0, 0, node);
-  node.connect(0, 0, node3);
-  node2.connect(0, 1, node3);
+  inputNode1.connect(0, 0, genNode1);
+  inputNode2.connect(0, 1, genNode1);
+  genNode1.connect(0, 0, outputNode1);
 
   Graph.render();
 };
