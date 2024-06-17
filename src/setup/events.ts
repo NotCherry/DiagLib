@@ -5,7 +5,6 @@ import { isPointingTo } from "../util/utility";
 export default (WsApiURL) => {
   Graph.canvas.addEventListener("contextmenu", (event) => {
     Graph.cursorAt = isPointingTo();
-    // Graph.drawLine = false;
   });
 
   new Connection(WsApiURL);

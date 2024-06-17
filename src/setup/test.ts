@@ -7,14 +7,14 @@ export default () => {
   console.info("Test setup");
 
   var inputNode1 = new InputNode({
-    title: "Input",
+    title: "Input 1",
     pos: { x: 100, y: 100 },
     owner: Graph,
   });
   Graph.addNode(inputNode1);
 
   var inputNode2 = new InputNode({
-    title: "Input",
+    title: "Input 2",
     pos: { x: 100, y: 200 },
     owner: Graph,
   });

@@ -1,11 +1,11 @@
+import { createElement } from "../Adapter";
 import Graph from "../Graph";
 import Widget, { AdjustElementPos, IWidget } from "./Widget";
 
 export class TextArea extends Widget {
   constructor(args: IWidget) {
     super(args);
-    //this.width = Graph.nodeMap.get(this.owner)!.;
-    this.element = document.createElement("textarea");
+    this.element = createElement("textarea");
     this.element.style.zIndex = "1";
     this.element.id = "TEXTAREA";
     this.element.style.position = "absolute";

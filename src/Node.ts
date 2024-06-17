@@ -56,7 +56,7 @@ class GraphNode {
       this.color = "black";
     }
     this.owner = args.owner;
-    this.data = args.data || {};
+    this.data = args.data || { text: "" };
   }
 
   removeAllWidgets() {

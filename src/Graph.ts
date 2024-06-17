@@ -172,15 +172,7 @@ export class Graph {
   static loadGraph(graph: string) {
     Graph.reset();
     graph !== "" ? loadGraph(graph) : setup_test();
-    // setup_test();
   }
-
-  // static getSelectedNode() {
-  //   return Graph.selectedNode;
-  // }
-  // static getSelectedIO() {
-  //   return Graph.selectedIO;
-  // }
 }
 
 export default Graph;
