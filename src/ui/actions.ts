@@ -61,3 +61,9 @@ export function callLoad(graph?: string) {
   graph = graph || "";
   Graph.loadGraph(graph);
 }
+
+export function clearScreen() {
+  Graph.widgetMap.forEach((widget) => {
+    widget.remove();
+  })
+}

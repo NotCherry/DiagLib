@@ -24,7 +24,7 @@ export default () => {
     title: "Test",
     pos: { x: 300, y: 100 },
     owner: Graph,
-    data: { text: "{1} is better than {2}" },
+    // data: { text: "{1} is better than {2}" },
   });
   Graph.addNode(genNode1);
 
