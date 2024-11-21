@@ -2,64 +2,85 @@ import Graph from "../Graph";
 import GraphNodeIO from "../IO";
 import { setSelectedElements } from "../util/utility";
 
-export default () => {
-  addEventListener("mousedown", (event) => {
-    // grab selected node if are currently connnected and reconnect it into new place
-    setSelectedElements();
+// Event handlers
+function handleMouseDown(event) {
+  // Grab the selected node if connected, and reconnect it to a new place
+  setSelectedElements();
 
-    if (Graph.selectedIO != undefined) {
-      let selected_io = Graph.IOMap.get(Graph.selectedIO)!;
-      // let selected_node = Graph.nodeMap.get(Graph.selected_node);
-      if (selected_io.pointedBy != undefined && selected_io.type === "input") {
-        let src_io = Graph.IOMap.get(selected_io.pointedBy!)!;
-        Graph.LineStart = src_io.pos;
-        // the io that is beging of the line (output) remove connection to selected io
-        src_io!.pointingTo! = src_io!.pointingTo!.filter(
-          (io) => io != Graph.selectedIO
-        );
+  if (Graph.selectedIO !== undefined) {
+    const selectedIO = Graph.IOMap.get(Graph.selectedIO);
+    if (selectedIO) {
+      if (selectedIO.pointedBy !== undefined && selectedIO.type === "input") {
+        const srcIO = Graph.IOMap.get(selectedIO.pointedBy);
+        if (srcIO) {
+          Graph.LineStart = srcIO.pos;
+          // Remove the connection from source IO to the selected IO
+          srcIO.pointingTo = srcIO.pointingTo?.filter(io => io !== Graph.selectedIO);
 
-        Graph.selectedNode = src_io.owner;
-        selected_io.pointedBy = undefined;
-        Graph.selectedIO = src_io.id;
-      }
-      Graph.render();
-    }
-  });
-
-  addEventListener("mousemove", (event) => {
-    if (Graph.drawLine && Graph.selectedIO != undefined) {
-      Graph.IOMap.get(Graph.selectedIO!)!.pointedBy == undefined
-        ? Graph.render()
-        : null;
-    }
-  });
-
-  addEventListener("mouseup", (event) => {
-    if (Graph.selectedIO != undefined) {
-      let begin_io: GraphNodeIO = Graph.IOMap.get(Graph.selectedIO)!;
-      setSelectedElements();
-      let selected_io = Graph.IOMap.get(Graph.selectedIO)!;
-      console.log(begin_io.id, selected_io.id);
-      // Check if the selected io is not the same as the begin io and connect it
-      if (
-        begin_io.type != selected_io.type &&
-        begin_io.owner != selected_io.owner &&
-        selected_io.pointedBy == undefined
-      ) {
-        if (begin_io.type === "output") {
-          begin_io.pointingTo?.push(selected_io.id);
-          selected_io.pointedBy = begin_io.id;
-        } else {
-          selected_io.pointingTo?.push(begin_io.id);
-          begin_io.pointedBy = selected_io.id;
+          Graph.selectedNode = srcIO.owner;
+          selectedIO.pointedBy = undefined;
+          Graph.selectedIO = srcIO.id;
         }
       }
     }
-
-    Graph.selectedNode = undefined;
-    Graph.selectedIO = undefined;
-    Graph.drawLine = false;
-
     Graph.render();
-  });
-};
+  }
+}
+
+function handleMouseMove(event) {
+  if (Graph.drawLine && Graph.selectedIO !== undefined) {
+    const selectedIO = Graph.IOMap.get(Graph.selectedIO);
+    if (selectedIO && selectedIO.pointedBy === undefined) {
+      Graph.render();
+    }
+  }
+}
+
+function handleMouseUp(event) {
+  if (Graph.selectedIO !== undefined) {
+    const beginIO = Graph.IOMap.get(Graph.selectedIO);
+    setSelectedElements();
+    const selectedIO = Graph.IOMap.get(Graph.selectedIO);
+
+    if (beginIO && selectedIO) {
+      // Connect beginIO and selectedIO if they are compatible
+      if (
+        beginIO.type !== selectedIO.type &&
+        beginIO.owner !== selectedIO.owner &&
+        selectedIO.pointedBy === undefined
+      ) {
+        if (beginIO.type === "output") {
+          beginIO.pointingTo = beginIO.pointingTo || [];
+          beginIO.pointingTo.push(selectedIO.id);
+          selectedIO.pointedBy = beginIO.id;
+        } else {
+          selectedIO.pointingTo = selectedIO.pointingTo || [];
+          selectedIO.pointingTo.push(beginIO.id);
+          beginIO.pointedBy = selectedIO.id;
+        }
+      }
+    }
+  }
+
+  Graph.selectedNode = undefined;
+  Graph.selectedIO = undefined;
+  Graph.drawLine = false;
+
+  Graph.render();
+}
+
+// Functions to add and remove event listeners
+function addIOEvents() {
+  Graph.canvas.addEventListener("mousedown", handleMouseDown);
+  Graph.canvas.addEventListener("mousemove", handleMouseMove);
+  Graph.canvas.addEventListener("mouseup", handleMouseUp);
+}
+
+function removeIOEvents() {
+  Graph.canvas.removeEventListener("mousedown", handleMouseDown);
+  Graph.canvas.removeEventListener("mousemove", handleMouseMove);
+  Graph.canvas.removeEventListener("mouseup", handleMouseUp);
+}
+
+// Export the add and remove functions
+export { addIOEvents, removeIOEvents };

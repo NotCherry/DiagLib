@@ -1,7 +1,6 @@
 import Graph from "../Graph";
 import GraphNodeIO from "../IO";
 import GraphNode from "../Node";
-import graph from "../setup/graph";
 import Connection from "../util/connection";
 
 export function addNode(type: string) {
@@ -22,7 +21,6 @@ export function addNode(type: string) {
 export function deleteNode() {
   if (Graph.cursorAt.type != "node") {
     Graph.logs.addMessage({ type: "info", body: "Node not selected" });
-    console.log(Graph.logs);
     return;
   }
 
@@ -38,6 +36,10 @@ export function addIOToNode() {
 
 export function removeIOFromNode() {
   let io = Graph.IOMap.get(Graph.cursorAt.id!);
+  if (io.pointedBy != undefined || io.pointedBy == "") {
+    let IOPointingToIO = Graph.IOMap.get(io.pointedBy);
+    IOPointingToIO.pointingTo = IOPointingToIO.pointingTo.filter(item => item != io.id);
+  }
   let node = Graph.nodeMap.get(io.owner);
   node.removeIO(io);
   Graph.render();
@@ -48,8 +50,9 @@ export function resizeNode(node: GraphNode, width: number, height: number) {
   Graph.render();
 }
 
-export function callRun() {
-  let msg = { type: "run", data: Graph.serializeNodes() };
+export function callRun(type: string) {
+  Graph.generatingContent = true;
+  let msg = { type, data: Graph.serializeNodes() };
   Connection.send(JSON.stringify(msg));
 }
 

@@ -4,7 +4,7 @@ import { Point } from "../types";
 
 function formatStringFromInputs(node, format) {
   if (!node || !node.inputs) {
-    console.error("Node or inputs array not found.");
+    // console.error("Node or inputs array not found.");
     return null;
   }
 
@@ -115,9 +115,4 @@ export function isPointingTo() {
 
 export function setSelectedElements() {
   isPointingTo();
-  // if (element.type == "io") {
-  //   Graph.selectedIO = element.id;
-  // } else if (element.type == "node") {
-  //   Graph.selectedNode = element.id;
-  // }
 }

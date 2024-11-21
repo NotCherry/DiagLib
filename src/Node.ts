@@ -1,9 +1,10 @@
 import Graph from "./Graph";
 import { Point } from "./types";
 import { drawCircle } from "./util/utility";
-import Widget from "./widgets/Widget";
+import Widget, { IWidget } from "./widgets/Widget";
 import { v4 as uuidv4 } from "uuid";
 import GraphNodeIO, { IAddGraphNodeIO } from "./IO";
+import { ResponseTextArea } from "./widgets/TextInput";
 
 export interface IGraphNodeOptions {
   color?: string;
@@ -39,11 +40,14 @@ class GraphNode {
 
   // variables for calculating size of node
   ioSpacingY: number = 30;
+  ioXSpacing: number = 5;
   elementsYSpacing: number = 45; // between io, widgest, etc
+  widgetsYSpacing: number = 35;
   elementsXSpacing: number = 15;
   totalWidgetsHeight: number = 0;
   totalIOHeight: number = 0;
   owner: Graph;
+  hasResponseWidget: boolean = false;
 
   element: HTMLSpanElement;
   constructor(args: IGraphNode) {
@@ -110,6 +114,19 @@ class GraphNode {
   }
 
   render(ctx: CanvasRenderingContext2D) {
+    this.drawNode(ctx);
+
+    if (this.size[0] > 100 && this.size[1] > 50) {
+      if (this.io.length > 0) {
+        this.drawIO(ctx);
+      }
+      if (this.widgets.length > 0) {
+        this.drawWidgets(ctx);
+      }
+    }
+  }
+
+  drawNode(ctx: CanvasRenderingContext2D) {
     this.updateNodeSize();
     ctx.fillStyle = this.color || "#222";
     ctx.fillRect(this.pos.x, this.pos.y, this.size[0], this.size[1]);
@@ -126,23 +143,26 @@ class GraphNode {
     ctx.font = "20px monospace";
     ctx.fillStyle = "white";
     ctx.fillText(this.title, this.pos.x + 10, this.pos.y + 20);
-
-    if (this.size[0] > 100 && this.size[1] > 50) {
-      if (this.io.length > 0) {
-        this.drawIO(ctx);
-      }
-      if (this.widgets.length > 0) {
-        this.drawWidgets(ctx);
-      }
-    }
   }
 
   reset() {
     this.widgets.map((w) => w.remove());
   }
 
-  updateData(data: KeyValue) {
-    this.data = data;
+  updateData(data: string) {
+    this.data['response'] = data;
+    
+    if (!this.hasResponseWidget) {
+      this.hasResponseWidget = true;
+      this.addWidget(new ResponseTextArea({type:"respones", owner: this.id, height: 350}as IWidget));
+    }
+
+    for (let i = 0; i < this.widgets.length; i++) {
+      if (this.widgets[i] instanceof ResponseTextArea) {
+        this.widgets[i].update();
+        
+      }
+    }
   }
 
   updateNodeSize() {
@@ -215,13 +235,13 @@ class GraphNode {
     this.io.forEach((io, i) => {
       if (io.type === "input") {
         io.pos = {
-          x: this.pos.x + this.elementsXSpacing,
+          x: this.pos.x + this.ioXSpacing,
           y: this.pos.y + this.elementsYSpacing + inputs * this.ioSpacingY,
         };
         inputs++;
       } else {
         io.pos = {
-          x: this.pos.x + this.size[0] - this.elementsXSpacing,
+          x: this.pos.x + this.size[0] - this.ioXSpacing,
           y: this.pos.y + this.elementsYSpacing + outputs * this.ioSpacingY,
         };
         outputs++;
@@ -290,7 +310,8 @@ class GraphNode {
           this.pos.y +
           y_offset +
           this.totalIOHeight +
-          this.elementsYSpacing * index,
+          (index == 1 ? this.elementsYSpacing : this.widgetsYSpacing) * index +
+          (index > 1 ? this.widgets[index-2].height : 0),
       };
       if (widget.width != this.size[0] - 20) {
         widget.width = this.size[0] - 20;

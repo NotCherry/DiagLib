@@ -13,3 +13,14 @@ export enum NodeType {
   Input,
   Output,
 }
+
+export type OAIAPI = {
+  choices: OAIResponse[] 
+}
+
+export type OAIResponse = {
+	index: number,
+	text: string,
+	logprobs: string,
+	finish_reason: string
+}

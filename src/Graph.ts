@@ -7,7 +7,9 @@ import { v4 as uuidv4 } from "uuid";
 import setup_test from "./setup/test";
 import Log from "./util/log";
 
-import { loadGraph } from "./setup/graph";
+import drag_setup, { dragEventsReset } from "./setup/drag";
+import { destructEvents, setupEvents } from "./setup/events";
+import { TextArea } from "./widgets/TextInput";
 
 export function setViewportSize(width: number, height: number) {
   Graph.viewportWidth = width;
@@ -59,6 +61,9 @@ export class Graph {
 
   static mouseBtn: number | undefined = undefined;
 
+  static generatingContent: boolean = false;
+  static returnFunction: Function = undefined;
+
   constructor(canvas: HTMLCanvasElement) {
     Graph.canvas = canvas;
     Graph.ctx = canvas.getContext("2d")!;
@@ -76,6 +81,8 @@ export class Graph {
     Graph.nodes.map((n) => n.reset());
     Graph.nodes = [];
     Graph.connectedIO = [];
+    dragEventsReset();
+    destructEvents();
   }
 
   static switchHTMLElements() {
@@ -84,9 +91,12 @@ export class Graph {
         widget.element.style.display =
           widget.element.style.display == "none" ? "block" : "none";
       }
-      widget.element.style.pointerEvents =
-        widget.element.style.pointerEvents == "none" ? "auto" : "none";
+      this.htmlPointerNone(widget.element)
     });
+  }
+
+  static htmlPointerNone(element: HTMLElement) {
+    element.style.pointerEvents = element.style.pointerEvents == "none" ? "auto" : "none";
   }
 
   static render() {
@@ -101,7 +111,6 @@ export class Graph {
     Graph.scale = Graph.transforms.a;
 
     Graph.nodes.forEach((node) => {
-      node.render(Graph.ctx);
       node.io.forEach((io) => {
         if (io.pointingTo != undefined) {
           Graph.connectedIO.push(io);
@@ -121,6 +130,11 @@ export class Graph {
     if (Graph.drawLine) {
       drawIOLineTo(Graph.ctx, Graph.LineStart, Graph.cursorPos);
     }
+    // to place line under the nodes
+    Graph.nodes.forEach((node) => {
+      node.render(Graph.ctx);
+    });
+    
     Graph.connectedIO = [];
   }
 
@@ -169,9 +183,67 @@ export class Graph {
 
     return diagram;
   }
-  static loadGraph(graph: string) {
+  
+  static loadGraph(config: string) {
     Graph.reset();
-    graph !== "" ? loadGraph(graph) : setup_test();
+    drag_setup();
+    setupEvents();
+
+    if (config === "" || config == undefined) {
+      setup_test();
+      return;
+    }
+
+    let spec = JSON.parse(config);
+    
+    Graph.id = spec.id;
+    Graph.graph_name = spec.graph_name;
+  
+    Graph.drawIO = false;
+  
+    spec.nodes.forEach((node: any) => {
+      let { id, title, type, size, pos, data } = node;
+      let n = new GraphNode({
+        id,
+        title,
+        type,
+        size,
+        pos,
+        data,
+        owner: Graph,
+      });
+      node.io.map((io: any) => {
+        let args = {
+          id: io.id,
+          name: io.name,
+          type: io.type,
+          pos: io.pos,
+          pointingTo: io.pointingTo,
+          pointedBy: io.pointedBy,
+        };
+        n.addIO(args);
+      });
+  
+      node.widgets.map((widget: any) => {
+        let args = {
+          id: widget.id,
+          type: widget.type,
+          owner: widget.owner,
+        };
+        n.addWidget(new TextArea(args));
+      });
+      Graph.addNode(n);
+    });
+  
+    Graph.drawIO = true;
+    Graph.render();
+  }
+
+  static setReturnFunc(f: Function) {
+    Graph.returnFunction = f
+  }
+  static returnLastContent(text: string) {
+    Graph.returnFunction(text)
   }
 }
 

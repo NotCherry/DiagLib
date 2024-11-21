@@ -1,14 +1,13 @@
 import setupDrag from "./drag";
-import setupGraph, { loadGraph } from "./graph";
+import setupGraph from "./graph";
 import setupNodeTypes from "./nodeTypes";
-import setupEvents from "./events";
+import {setupEvents} from "./events";
+import Graph from "../Graph";
 
-export function setup(WsApiURL: string, graph?: string) {
+export function setup(WsApiURL: string = "", graph_config?: string) {
   setupNodeTypes();
   setupGraph();
   setupDrag();
   setupEvents(WsApiURL);
-
-  graph = graph || "";
-  loadGraph(graph);
+  Graph.loadGraph(graph_config);
 }

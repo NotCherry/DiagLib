@@ -33,6 +33,7 @@ export default abstract class Widget {
     }
   }
 
+  abstract update(): void;
   abstract render(): void;
   abstract setup();
   abstract validate(): boolean;

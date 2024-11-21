@@ -4,8 +4,6 @@ import { InputNode } from "../nodes/InputNode";
 import { OutputNode } from "../nodes/OutputNode";
 
 export default () => {
-  console.info("Test setup");
-
   var inputNode1 = new InputNode({
     title: "Input 1",
     pos: { x: 100, y: 100 },

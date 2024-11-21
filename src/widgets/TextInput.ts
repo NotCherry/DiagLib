@@ -10,6 +10,8 @@ export class TextArea extends Widget {
     this.element.style.position = "absolute";
     this.element.style.width = `${this.width}px`;
     this.element.style.height = `${this.height}px`;
+
+    // this.element.addEventListener('mousedown', (e) => { if (event.button === 1) e.preventDefault(); e.target.style.pointerEvents = 'none'; })
     document.body.appendChild(this.element);
   }
 
@@ -21,6 +23,10 @@ export class TextArea extends Widget {
       data["text"] = target.value;
     });
     this.element.value = data["text"];
+  }
+
+  update(): void {
+      
   }
 
   render(): void {
@@ -62,5 +68,33 @@ export class TextArea extends Widget {
 
   remove() {
     this.element.parentNode?.removeChild(this.element);
+  }
+}
+
+export class ResponseTextArea extends TextArea {
+  override setup(): void {
+    this.update();
+  }
+
+
+  update() {
+    const owner = Graph.nodeMap.get(this.owner);
+    if (owner == undefined) {
+      throw Error;
+    }
+
+    owner.updateWidgetsPos();
+    owner.updateNodeSize
+    owner.drawNode(Graph.ctx)
+    owner.drawIO(Graph.ctx)
+    this.render()
+  }
+
+
+
+  override render(): void {
+    AdjustElementPos(this.element, this.pos, this.width, this.height);
+    let data = Graph.nodeMap.get(this.owner)!.data;
+    this.element.value = data["response"];
   }
 }
